@@ -26,6 +26,9 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
 	<LangVersion>12.0</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+	<LangVersion>13.0</LangVersion>
+  </PropertyGroup>
 
   <PropertyGroup>
     <OutputPath>../../Bin/$(Configuration)/</OutputPath>
