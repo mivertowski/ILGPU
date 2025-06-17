@@ -285,9 +285,25 @@ namespace ILGPU.Runtime.CPU
         #region Properties
 
         /// <summary>
+        /// Gets the unified device identifier for this CPU device.
+        /// </summary>
+        /// <remarks>
+        /// For CPU devices, the device ID is computed from the device configuration
+        /// (warp size, multiprocessors, etc.) to ensure consistency across instances.
+        /// </remarks>
+        public override DeviceId DeviceId => DeviceId.FromCPU(GetConfigurationHash());
+
+        /// <summary>
         /// Returns the number of threads.
         /// </summary>
         public int NumThreads { get; }
+
+        /// <summary>
+        /// Computes a hash code representing this CPU device's configuration.
+        /// </summary>
+        /// <returns>A hash representing the device configuration.</returns>
+        private int GetConfigurationHash() =>
+            HashCode.Combine(WarpSize, NumMultiprocessors, MaxNumThreadsPerGroup);
 
         #endregion
 

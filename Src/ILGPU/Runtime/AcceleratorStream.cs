@@ -13,6 +13,7 @@ using ILGPU.Resources;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ILGPU.Runtime
@@ -54,6 +55,27 @@ namespace ILGPU.Runtime
         /// </summary>
         /// <returns>A task object to wait for.</returns>
         public Task SynchronizeAsync() => Task.Run(synchronizeAction);
+
+        /// <summary>
+        /// Synchronizes all queued operations asynchronously with cancellation support.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token to monitor for cancellation requests.</param>
+        /// <returns>A task object to wait for.</returns>
+        /// <remarks>
+        /// This method provides proper async/await integration with cancellation support,
+        /// enabling modern .NET async patterns for GPU synchronization operations.
+        /// </remarks>
+        public Task SynchronizeAsync(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return Task.FromCanceled(cancellationToken);
+
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                Synchronize();
+            }, cancellationToken);
+        }
 
         /// <summary>
         /// Makes the associated accelerator the current one for this thread and

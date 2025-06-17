@@ -106,7 +106,7 @@ namespace ILGPU.Runtime
     /// Note that all derived class have to be annotated with the
     /// <see cref="DeviceTypeAttribute"/> attribute.
     /// </remarks>
-    public abstract class Device : IDevice, IAcceleratorBuilder
+    public abstract class Device : IDevice, IAcceleratorBuilder, IDeviceIdentifiable
     {
         #region Instance
 
@@ -129,6 +129,16 @@ namespace ILGPU.Runtime
         /// Returns the type of the associated accelerator.
         /// </summary>
         public AcceleratorType AcceleratorType { get; }
+
+        /// <summary>
+        /// Gets the unique device identifier for this device.
+        /// </summary>
+        /// <remarks>
+        /// This property provides a consistent way to identify devices across
+        /// different accelerator types, enabling generic programming patterns
+        /// and dependency injection scenarios.
+        /// </remarks>
+        public abstract DeviceId DeviceId { get; }
 
         /// <summary>
         /// Returns the name of this device.

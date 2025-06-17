@@ -157,7 +157,7 @@ namespace ILGPU.Runtime.Cuda
             if (deviceId < 0)
                 throw new ArgumentOutOfRangeException(nameof(deviceId));
 
-            DeviceId = deviceId;
+            CudaDeviceId = deviceId;
 
             InitDeviceInfo();
             InitArchitectureInfo();
@@ -177,30 +177,30 @@ namespace ILGPU.Runtime.Cuda
         {
             // Get the device name
             ThrowIfFailed(
-                CurrentAPI.GetDeviceName(out string? name, DeviceId));
+                CurrentAPI.GetDeviceName(out string? name, CudaDeviceId));
             Name = name ?? string.Empty;
 
             // Resolve clock rate
             ClockRate = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_CLOCK_RATE, DeviceId) / 1000;
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_CLOCK_RATE, CudaDeviceId) / 1000;
 
             // Resolve warp size
             WarpSize = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_WARP_SIZE, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_WARP_SIZE, CudaDeviceId);
 
             // Resolve number of multiprocessors
             NumMultiprocessors = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, CudaDeviceId);
 
             // Result max number of threads per multiprocessor
             MaxNumThreadsPerMultiprocessor = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_MULTIPROCESSOR,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve the current driver mode
             DriverMode = (DeviceDriverMode)CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_TCC_DRIVER,
-                DeviceId);
+                CudaDeviceId);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace ILGPU.Runtime.Cuda
                 CurrentAPI.GetDeviceComputeCapability(
                     out int major,
                     out int minor,
-                DeviceId));
+                CudaDeviceId));
             Architecture = GetArchitecture(major, minor);
 
             if (Architecture.HasValue && CudaAccelerator.TryGetInstructionSet(
@@ -239,24 +239,24 @@ namespace ILGPU.Runtime.Cuda
             // Resolve max grid size
             MaxGridSize = new Index3D(
                 CurrentAPI.GetDeviceAttribute(
-                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X, DeviceId),
+                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X, CudaDeviceId),
                 CurrentAPI.GetDeviceAttribute(
-                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y, DeviceId),
+                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y, CudaDeviceId),
                 CurrentAPI.GetDeviceAttribute(
-                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z, DeviceId));
+                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z, CudaDeviceId));
 
             // Resolve max group size
             MaxGroupSize = new Index3D(
                 CurrentAPI.GetDeviceAttribute(
-                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, DeviceId),
+                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, CudaDeviceId),
                 CurrentAPI.GetDeviceAttribute(
-                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y, DeviceId),
+                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y, CudaDeviceId),
                 CurrentAPI.GetDeviceAttribute(
-                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z, DeviceId));
+                    DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z, CudaDeviceId));
 
             // Resolve max threads per group
             MaxNumThreadsPerGroup = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, CudaDeviceId);
         }
 
         /// <summary>
@@ -266,33 +266,33 @@ namespace ILGPU.Runtime.Cuda
         {
             // Resolve the total memory size
             ThrowIfFailed(
-                CurrentAPI.GetTotalDeviceMemory(out long total, DeviceId));
+                CurrentAPI.GetTotalDeviceMemory(out long total, CudaDeviceId));
             MemorySize = total;
 
             // Resolve max shared memory per block
             MaxSharedMemoryPerGroup = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve the maximum amount of shared memory per multiprocessor
             MaxSharedMemoryPerMultiprocessor = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.
                     CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve total constant memory
             MaxConstantMemory = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY, CudaDeviceId);
 
             // Resolve memory clock rate
             MemoryClockRate = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE, DeviceId)
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE, CudaDeviceId)
                 / 1000;
 
             // Resolve the bus width
             MemoryBusWidth = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_GLOBAL_MEMORY_BUS_WIDTH,
-                DeviceId);
+                CudaDeviceId);
         }
 
         /// <summary>
@@ -302,47 +302,47 @@ namespace ILGPU.Runtime.Cuda
         {
             // Resolve the L2 cache size
             L2CacheSize = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, CudaDeviceId);
 
             // Resolve the total number of registers per multiprocessor
             TotalNumRegistersPerMultiprocessor = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_MULTIPROCESSOR,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve the total number of registers per group
             TotalNumRegistersPerGroup = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve the max memory pitch
             MaxMemoryPitch = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_PITCH, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MAX_PITCH, CudaDeviceId);
 
             // Resolve the number of concurrent copy engines
             NumConcurrentCopyEngines = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT, DeviceId);
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT, CudaDeviceId);
 
             // Resolve whether this device has ECC support
             HasECCSupport = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_ECC_ENABLED, DeviceId) != 0;
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_ECC_ENABLED, CudaDeviceId) != 0;
 
             // Resolve whether this device supports managed memory
             SupportsManagedMemory = CurrentAPI.GetDeviceAttribute(
-                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MANAGED_MEMORY, DeviceId) != 0;
+                DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_MANAGED_MEMORY, CudaDeviceId) != 0;
 
             // Resolve whether this device supports compute preemption
             SupportsComputePreemption = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_COMPUTE_PREEMPTION_SUPPORTED,
-                DeviceId) != 0;
+                CudaDeviceId) != 0;
 
             // Resolve whether this device supports using host memory
             SupportsMappingHostMemory = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_CAN_MAP_HOST_MEMORY,
-                DeviceId) != 0;
+                CudaDeviceId) != 0;
             SupportsUsingHostPointerForRegisteredMemory = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.
                     CU_DEVICE_ATTRIBUTE_CAN_USE_HOST_POINTER_FOR_REGISTERED_MEM,
-                DeviceId) != 0;
+                CudaDeviceId) != 0;
         }
 
         /// <summary>
@@ -353,17 +353,17 @@ namespace ILGPU.Runtime.Cuda
             // Resolve the PCI domain id
             PCIDomainId = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve the PCI device id
             PCIBusId = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_PCI_BUS_ID,
-                DeviceId);
+                CudaDeviceId);
 
             // Resolve the PCI device id
             PCIDeviceId = CurrentAPI.GetDeviceAttribute(
                 DeviceAttributeKind.CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID,
-                DeviceId);
+                CudaDeviceId);
         }
 
         #endregion
@@ -371,9 +371,14 @@ namespace ILGPU.Runtime.Cuda
         #region Properties
 
         /// <summary>
-        /// Returns the Cuda device id.
+        /// Returns the native Cuda device id.
         /// </summary>
-        public int DeviceId { get; }
+        public int CudaDeviceId { get; }
+
+        /// <summary>
+        /// Gets the unified device identifier for this CUDA device.
+        /// </summary>
+        public override DeviceId DeviceId => DeviceId.FromCuda(CudaDeviceId);
 
         /// <summary>
         /// Returns the current driver version.
@@ -521,7 +526,7 @@ namespace ILGPU.Runtime.Cuda
             base.PrintHeader(writer);
 
             writer.Write("  Cuda device id:                          ");
-            writer.WriteLine(DeviceId);
+            writer.WriteLine(CudaDeviceId);
 
             writer.Write("  Cuda driver version:                     ");
             writer.WriteLine("{0}.{1}", DriverVersion.Major, DriverVersion.Minor);

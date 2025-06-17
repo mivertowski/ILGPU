@@ -60,7 +60,7 @@ namespace ILGPU.Runtime.OpenCL
 
             var buildError = CurrentAPI.BuildProgram(
                 programPtr,
-                accelerator.DeviceId,
+                accelerator.OpenCLDeviceId,
                 options);
 
             if (buildError != CLError.CL_SUCCESS)
@@ -68,7 +68,7 @@ namespace ILGPU.Runtime.OpenCL
                 CLException.ThrowIfFailed(
                     CurrentAPI.GetProgramBuildLog(
                         programPtr,
-                        accelerator.DeviceId,
+                        accelerator.OpenCLDeviceId,
                         out errorLog));
                 CLException.ThrowIfFailed(
                     CurrentAPI.ReleaseProgram(programPtr));

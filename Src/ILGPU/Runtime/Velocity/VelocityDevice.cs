@@ -118,6 +118,15 @@ namespace ILGPU.Runtime.Velocity
         #region Properties
 
         /// <summary>
+        /// Gets the unified device identifier for this Velocity device.
+        /// </summary>
+        /// <remarks>
+        /// For Velocity devices, the device ID is computed from the device configuration
+        /// (device type, warp size, multiprocessors, etc.) to ensure consistency.
+        /// </remarks>
+        public override DeviceId DeviceId => DeviceId.FromVelocity(GetConfigurationHash());
+
+        /// <summary>
         /// Returns the current device type.
         /// </summary>
         public VelocityDeviceType DeviceType { get; }
@@ -136,6 +145,13 @@ namespace ILGPU.Runtime.Velocity
         /// Returns true if this device operates in little endian mode.
         /// </summary>
         public bool IsLittleEndian { get; }
+
+        /// <summary>
+        /// Computes a hash code representing this Velocity device's configuration.
+        /// </summary>
+        /// <returns>A hash representing the device configuration.</returns>
+        private int GetConfigurationHash() =>
+            HashCode.Combine(DeviceType, WarpSize, NumMultiprocessors, MaxNumThreadsPerGroup);
 
         #endregion
 

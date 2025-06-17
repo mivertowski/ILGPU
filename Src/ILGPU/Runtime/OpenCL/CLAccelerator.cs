@@ -112,7 +112,7 @@ namespace ILGPU.Runtime.OpenCL
 
             // Create new context
             CLException.ThrowIfFailed(
-                CurrentAPI.CreateContext(DeviceId, out var contextPtr));
+                CurrentAPI.CreateContext(OpenCLDeviceId, out var contextPtr));
             NativePtr = contextPtr;
 
             Bind();
@@ -148,7 +148,7 @@ namespace ILGPU.Runtime.OpenCL
                 // Resolve information
                 WarpSize = CurrentAPI.GetKernelWorkGroupInfo<IntPtr>(
                     kernelPtr,
-                    DeviceId,
+                    OpenCLDeviceId,
                     CLKernelWorkGroupInfoType
                         .CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE).ToInt32();
             }
@@ -193,7 +193,7 @@ namespace ILGPU.Runtime.OpenCL
                     };
                     Capabilities.SubGroups = acceleratorId.TryGetKernelSubGroupInfo(
                         kernelPtr,
-                        DeviceId,
+                        OpenCLDeviceId,
                         CLKernelSubGroupInfoType
                             .CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR,
                         localGroupSizes,
@@ -254,7 +254,7 @@ namespace ILGPU.Runtime.OpenCL
         /// <summary>
         /// Returns the native OpenCL device id.
         /// </summary>
-        public IntPtr DeviceId => Device.DeviceId;
+        public IntPtr OpenCLDeviceId => Device.OpenCLDeviceId;
 
         /// <summary>
         /// Returns the OpenCL device type.
@@ -536,7 +536,7 @@ namespace ILGPU.Runtime.OpenCL
             var clKernel = kernel.AsNotNullCast<CLKernel>();
             var workGroupSizeNative = CurrentAPI.GetKernelWorkGroupInfo<IntPtr>(
                 clKernel.KernelPtr,
-                DeviceId,
+                OpenCLDeviceId,
                 CLKernelWorkGroupInfoType.CL_KERNEL_WORK_GROUP_SIZE);
             int workGroupSize = workGroupSizeNative.ToInt32();
             workGroupSize = IntrinsicMath.Min(workGroupSize, maxGroupSize);

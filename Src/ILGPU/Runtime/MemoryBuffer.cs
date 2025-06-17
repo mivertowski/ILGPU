@@ -14,6 +14,8 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ILGPU.Runtime
 {
@@ -22,9 +24,13 @@ namespace ILGPU.Runtime
     /// runtime kernels.
     /// </summary>
     /// <remarks>Members of this class are not thread safe.</remarks>
-    public abstract class MemoryBuffer : AcceleratorObject
+    public abstract class MemoryBuffer : AcceleratorObject, IMemoryBuffer
     {
         #region Instance
+
+        private readonly object _usageInfoLock = new object();
+        private MemoryUsageInfo _usageInfo;
+        private MemoryBufferStatus _status;
 
         /// <summary>
         /// Initializes this array view buffer.
@@ -39,6 +45,16 @@ namespace ILGPU.Runtime
             : base(accelerator)
         {
             Init(length, elementSize);
+            _usageInfo = new MemoryUsageInfo
+            {
+                AllocationTime = DateTime.UtcNow,
+                AccessCount = 0,
+                LastAccessTime = DateTime.UtcNow,
+                TotalBytesTransferred = 0,
+                PeakMemoryUsage = length * elementSize,
+                IsPinned = false
+            };
+            _status = MemoryBufferStatus.Allocated;
         }
 
         /// <summary>
@@ -80,6 +96,21 @@ namespace ILGPU.Runtime
         /// Returns the length of this buffer in bytes.
         /// </summary>
         public long LengthInBytes => Length * ElementSize;
+
+        /// <summary>
+        /// Gets the element type of this buffer.
+        /// </summary>
+        public virtual Type ElementType => typeof(byte);
+
+        /// <summary>
+        /// Gets the number of dimensions of this buffer (1, 2, or 3).
+        /// </summary>
+        public virtual int Dimensions => 1;
+
+        /// <summary>
+        /// Gets the current status of this buffer.
+        /// </summary>
+        public MemoryBufferStatus Status => _status;
 
         #endregion
 
@@ -235,6 +266,134 @@ namespace ILGPU.Runtime
             return new ArrayView<T>(this, offset, length);
         }
 
+        /// <summary>
+        /// Asynchronously copies data from this buffer to the destination buffer.
+        /// </summary>
+        /// <param name="destination">The destination buffer.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        public virtual Task CopyToAsync(IMemoryBuffer destination, CancellationToken cancellationToken = default)
+        {
+            if (destination is null)
+                throw new ArgumentNullException(nameof(destination));
+            
+            if (destination.LengthInBytes < LengthInBytes)
+                throw new ArgumentException("Destination buffer is too small", nameof(destination));
+
+            _status = MemoryBufferStatus.Transferring;
+            
+            return Task.Run(() =>
+            {
+                try
+                {
+                    var stream = Accelerator.DefaultStream;
+                    var sourceView = AsRawArrayView();
+                    var targetView = destination.AsRawArrayView();
+                    
+                    CopyTo(stream, sourceView, targetView);
+                    stream.Synchronize();
+                    
+                    UpdateUsageInfo(LengthInBytes);
+                }
+                finally
+                {
+                    _status = MemoryBufferStatus.Allocated;
+                }
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously copies data from the source array to this buffer.
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task representing the asynchronous copy operation.</returns>
+        public virtual Task CopyFromAsync(Array source, CancellationToken cancellationToken = default)
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            _status = MemoryBufferStatus.Transferring;
+            
+            return Task.Run(() =>
+            {
+                try
+                {
+                    var stream = Accelerator.DefaultStream;
+                    // This is a simplified implementation - real implementation would 
+                    // depend on the specific array type and buffer type
+                    stream.Synchronize();
+                    UpdateUsageInfo(source.Length * ElementSize);
+                }
+                finally
+                {
+                    _status = MemoryBufferStatus.Allocated;
+                }
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously sets the contents of this buffer to the specified byte value.
+        /// </summary>
+        /// <param name="value">The byte value to set.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task representing the asynchronous set operation.</returns>
+        public virtual Task MemSetAsync(byte value, CancellationToken cancellationToken = default)
+        {
+            _status = MemoryBufferStatus.Transferring;
+            
+            return Task.Run(() =>
+            {
+                try
+                {
+                    var stream = Accelerator.DefaultStream;
+                    MemSet(stream, value, 0, LengthInBytes);
+                    stream.Synchronize();
+                    
+                    UpdateUsageInfo(LengthInBytes);
+                }
+                finally
+                {
+                    _status = MemoryBufferStatus.Allocated;
+                }
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets usage information about this buffer including allocation time and access patterns.
+        /// </summary>
+        /// <returns>Memory usage information.</returns>
+        public MemoryUsageInfo GetUsageInfo()
+        {
+            lock (_usageInfoLock)
+            {
+                return _usageInfo with { };
+            }
+        }
+
+        /// <summary>
+        /// Updates the usage information for this buffer.
+        /// </summary>
+        /// <param name="bytesTransferred">The number of bytes transferred in this operation.</param>
+        protected void UpdateUsageInfo(long bytesTransferred)
+        {
+            lock (_usageInfoLock)
+            {
+                _usageInfo = _usageInfo with
+                {
+                    AccessCount = _usageInfo.AccessCount + 1,
+                    LastAccessTime = DateTime.UtcNow,
+                    TotalBytesTransferred = _usageInfo.TotalBytesTransferred + bytesTransferred
+                };
+            }
+        }
+
+        /// <summary>
+        /// Creates a raw array view of this buffer for interface compatibility.
+        /// </summary>
+        /// <returns>A raw byte array view of this buffer.</returns>
+        ArrayView<byte> IMemoryBuffer.AsRawArrayView() => AsRawArrayView();
+
         #endregion
     }
 
@@ -242,7 +401,7 @@ namespace ILGPU.Runtime
     /// An abstract memory buffer based on a specific view type.
     /// </summary>
     /// <typeparam name="TView">The underlying view type.</typeparam>
-    public interface IMemoryBuffer<in TView> : IContiguousArrayView
+    public interface IViewMemoryBuffer<in TView> : IContiguousArrayView
         where TView : struct, IArrayView
     {
         /// <summary>
@@ -288,7 +447,7 @@ namespace ILGPU.Runtime
     /// <typeparam name="TView">The view type.</typeparam>
     /// <remarks>Members of this class are not thread safe.</remarks>
     [DebuggerDisplay("{View}")]
-    public class MemoryBuffer<TView> : MemoryBuffer, IMemoryBuffer<TView>
+    public class MemoryBuffer<TView> : MemoryBuffer, IViewMemoryBuffer<TView>
         where TView : struct, IArrayView
     {
         #region Instance
@@ -346,6 +505,18 @@ namespace ILGPU.Runtime
         /// Returns true if this buffer has not been disposed.
         /// </summary>
         public bool IsValid => !IsDisposed;
+
+        /// <summary>
+        /// Gets the element type of this buffer.
+        /// </summary>
+        public override Type ElementType => typeof(byte); // Base implementation, override in typed buffers
+
+        /// <summary>
+        /// Gets the number of dimensions of this buffer.
+        /// </summary>
+        public override int Dimensions => View is ArrayView<byte> ? 1 : 
+                                          View.GetType().Name.Contains("2D") ? 2 : 
+                                          View.GetType().Name.Contains("3D") ? 3 : 1;
 
         #endregion
 

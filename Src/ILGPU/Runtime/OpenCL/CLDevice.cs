@@ -210,7 +210,7 @@ namespace ILGPU.Runtime.OpenCL
             Backends.Backend.EnsureRunningOnNativePlatform();
 
             PlatformId = platformId;
-            DeviceId = deviceId;
+            OpenCLDeviceId = deviceId;
 
             InitPlatformInfo();
             InitDeviceInfo();
@@ -254,14 +254,14 @@ namespace ILGPU.Runtime.OpenCL
         {
             // Resolve general device information
             Name = CurrentAPI.GetDeviceInfo(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_NAME);
             DeviceType = (CLDeviceType)CurrentAPI.GetDeviceInfo<long>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_TYPE);
             DeviceVersion = CLDeviceVersion.TryParse(
                 CurrentAPI.GetDeviceInfo(
-                    DeviceId,
+                    OpenCLDeviceId,
                     CLDeviceInfoType.CL_DEVICE_VERSION),
                 out var deviceVersion)
                 ? deviceVersion
@@ -269,12 +269,12 @@ namespace ILGPU.Runtime.OpenCL
 
             // Resolve clock rate
             ClockRate = CurrentAPI.GetDeviceInfo<int>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_MAX_CLOCK_FREQUENCY);
 
             // Resolve number of multiprocessors
             NumMultiprocessors = CurrentAPI.GetDeviceInfo<int>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_MAX_COMPUTE_UNITS);
         }
 
@@ -284,7 +284,7 @@ namespace ILGPU.Runtime.OpenCL
         private void InitGridInfo()
         {
             int workItemDimensions = IntrinsicMath.Max(CurrentAPI.GetDeviceInfo<int>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS), 3);
 
             // OpenCL does not report maximium grid sizes, MaxGridSize value is consistent
@@ -295,14 +295,14 @@ namespace ILGPU.Runtime.OpenCL
 
             // Resolve max threads per group
             MaxNumThreadsPerGroup = CurrentAPI.GetDeviceInfo<IntPtr>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_MAX_WORK_GROUP_SIZE).ToInt32();
 
             // Max work item thread dimensions
             var workItemSizes = new IntPtr[workItemDimensions];
 
             CurrentAPI.GetDeviceInfo(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_MAX_WORK_ITEM_SIZES,
                 workItemSizes);
 
@@ -327,7 +327,7 @@ namespace ILGPU.Runtime.OpenCL
 
             // Try to determine the actual vendor
             if (CurrentAPI.GetDeviceInfo(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_WARP_SIZE_NV,
                 out int warpSize) == CLError.CL_SUCCESS)
             {
@@ -336,16 +336,16 @@ namespace ILGPU.Runtime.OpenCL
                 Vendor = CLDeviceVendor.Nvidia;
 
                 int major = CurrentAPI.GetDeviceInfo<int>(
-                    DeviceId,
+                    OpenCLDeviceId,
                     CLDeviceInfoType.CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV);
                 int minor = CurrentAPI.GetDeviceInfo<int>(
-                    DeviceId,
+                    OpenCLDeviceId,
                     CLDeviceInfoType.CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV);
                 if (major < 7 || major == 7 && minor < 5)
                     MaxNumThreadsPerMultiprocessor *= 2;
             }
             else if (CurrentAPI.GetDeviceInfo(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_WAVEFRONT_WIDTH_AMD,
                 out int wavefrontSize) == CLError.CL_SUCCESS)
             {
@@ -373,19 +373,19 @@ namespace ILGPU.Runtime.OpenCL
         {
             // Resolve memory size
             MemorySize = CurrentAPI.GetDeviceInfo<long>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_GLOBAL_MEM_SIZE);
 
             // Resolve max shared memory per block
             MaxSharedMemoryPerGroup = (int)IntrinsicMath.Min(
                 CurrentAPI.GetDeviceInfo<long>(
-                    DeviceId,
+                    OpenCLDeviceId,
                     CLDeviceInfoType.CL_DEVICE_LOCAL_MEM_SIZE),
                 int.MaxValue);
 
             // Resolve total constant memory
             MaxConstantMemory = (int)CurrentAPI.GetDeviceInfo<long>(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_MAX_PARAMETER_SIZE);
         }
 
@@ -396,7 +396,7 @@ namespace ILGPU.Runtime.OpenCL
         {
             // Determine the supported OpenCL C version
             var clVersionString = CurrentAPI.GetDeviceInfo(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_OPENCL_C_VERSION);
             if (!CLCVersion.TryParse(clVersionString, out CLCVersion version))
                 version = CLCVersion.CL10;
@@ -411,7 +411,7 @@ namespace ILGPU.Runtime.OpenCL
         {
             // Resolve extensions
             var extensionString = CurrentAPI.GetDeviceInfo(
-                DeviceId,
+                OpenCLDeviceId,
                 CLDeviceInfoType.CL_DEVICE_EXTENSIONS);
             foreach (var extension in extensionString.ToLowerInvariant().Split(' '))
                 extensionSet.Add(extension);
@@ -434,7 +434,7 @@ namespace ILGPU.Runtime.OpenCL
                 {
                     Capabilities.GenericAddressSpace =
                         CurrentAPI.GetDeviceInfo<int>(
-                            DeviceId,
+                            OpenCLDeviceId,
                             CLDeviceInfoType.CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT)
                         != 0;
                 }
@@ -455,9 +455,14 @@ namespace ILGPU.Runtime.OpenCL
         public IntPtr PlatformId { get; }
 
         /// <summary>
-        /// Returns the OpenCL device id.
+        /// Returns the native OpenCL device id.
         /// </summary>
-        public IntPtr DeviceId { get; }
+        public IntPtr OpenCLDeviceId { get; }
+
+        /// <summary>
+        /// Gets the unified device identifier for this OpenCL device.
+        /// </summary>
+        public override DeviceId DeviceId => DeviceId.FromOpenCL(PlatformId, OpenCLDeviceId);
 
         /// <summary>
         /// Returns the associated platform name.
@@ -548,7 +553,7 @@ namespace ILGPU.Runtime.OpenCL
         /// <param name="value">The resolved value.</param>
         /// <returns>The error code.</returns>
         public CLError GetDeviceInfo<T>(CLDeviceInfoType type, out T value)
-            where T : unmanaged => CurrentAPI.GetDeviceInfo(DeviceId, type, out value);
+            where T : unmanaged => CurrentAPI.GetDeviceInfo(OpenCLDeviceId, type, out value);
 
         /// <summary>
         /// Resolves device information as typed structure value of type
@@ -558,7 +563,7 @@ namespace ILGPU.Runtime.OpenCL
         /// <param name="type">The information type.</param>
         /// <returns>The resolved value.</returns>
         public T GetDeviceInfo<T>(CLDeviceInfoType type)
-            where T : unmanaged => CurrentAPI.GetDeviceInfo<T>(DeviceId, type);
+            where T : unmanaged => CurrentAPI.GetDeviceInfo<T>(OpenCLDeviceId, type);
 
         /// <summary>
         /// Returns true if the given extension is supported.
@@ -727,12 +732,12 @@ namespace ILGPU.Runtime.OpenCL
         public override bool Equals(object? obj) =>
             obj is CLDevice device &&
             device.PlatformId == PlatformId &&
-            device.DeviceId == DeviceId &&
+            device.OpenCLDeviceId == OpenCLDeviceId &&
             base.Equals(obj);
 
         /// <inheritdoc/>
         public override int GetHashCode() =>
-            base.GetHashCode() ^ PlatformId.GetHashCode() ^ DeviceId.GetHashCode();
+            base.GetHashCode() ^ PlatformId.GetHashCode() ^ OpenCLDeviceId.GetHashCode();
 
         #endregion
     }

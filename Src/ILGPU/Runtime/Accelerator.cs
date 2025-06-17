@@ -75,7 +75,8 @@ namespace ILGPU.Runtime
     /// <remarks>Members of this class are not thread safe.</remarks>
     public abstract partial class Accelerator :
         CachedExtensionBase<AcceleratorExtension>,
-        IDevice
+        IDevice,
+        IDeviceIdentifiable
     {
         #region Static
 
@@ -157,6 +158,16 @@ namespace ILGPU.Runtime
         /// Returns the parent device.
         /// </summary>
         public Device Device { get; }
+
+        /// <summary>
+        /// Gets the accelerator type for this accelerator.
+        /// </summary>
+        public AcceleratorType AcceleratorType => Device.AcceleratorType;
+
+        /// <summary>
+        /// Gets the unique device identifier for this accelerator.
+        /// </summary>
+        public DeviceId DeviceId => Device.DeviceId;
 
         /// <summary>
         /// Returns the default stream of this accelerator.
@@ -691,11 +702,6 @@ namespace ILGPU.Runtime
         #endregion
 
         #region IDevice
-
-        /// <summary>
-        /// Returns the type of the accelerator.
-        /// </summary>
-        public AcceleratorType AcceleratorType => Device.AcceleratorType;
 
         /// <summary>
         /// Returns the name of the device.

@@ -171,7 +171,7 @@ namespace ILGPU.Runtime.Cuda
                 CurrentAPI.CreateContext(
                     out var contextPtr,
                     acceleratorFlags,
-                    DeviceId));
+                    CudaDeviceId));
             NativePtr = contextPtr;
 
             Bind();
@@ -210,7 +210,7 @@ namespace ILGPU.Runtime.Cuda
         /// <summary>
         /// Returns the device id.
         /// </summary>
-        public int DeviceId => Device.DeviceId;
+        public int CudaDeviceId => Device.CudaDeviceId;
 
         /// <summary>
         /// Returns the current driver version.
@@ -495,8 +495,8 @@ namespace ILGPU.Runtime.Cuda
             CudaException.ThrowIfFailed(
                 CurrentAPI.CanAccessPeer(
                     out int canAccess,
-                    DeviceId,
-                    cudaAccelerator.DeviceId));
+                    CudaDeviceId,
+                    cudaAccelerator.CudaDeviceId));
             return canAccess != 0;
         }
 
