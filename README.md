@@ -2,6 +2,8 @@
 
 > **Forked from**: [ILGPU](https://github.com/m4rs-mt/ILGPU) - Enhanced with comprehensive modernization and cross-platform AI acceleration
 
+** STILL WIP **
+
 ILGPU is a modern, AOT-compatible compute acceleration framework for high-performance GPU programs written in .NET-based languages. Originally a JIT compiler, ILGPU has been transformed into a **universal compute platform** that intelligently leverages all available hardware acceleration capabilities across platforms.
 
 ## 🚀 **Universal Platform Support**
