@@ -286,14 +286,11 @@ namespace ILGPU.Runtime
             MemoryBuffer1D<T, Stride1D.Dense> result,
             Accelerator accelerator,
             CancellationToken cancellationToken = default)
-            where T : unmanaged, INumber<T>
-        {
-            return Task.Run(() =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                UnifiedMemoryOperations.Add(left, right, result, accelerator);
-            }, cancellationToken);
-        }
+            where T : unmanaged, INumber<T> => Task.Run(() =>
+                                                        {
+                                                            cancellationToken.ThrowIfCancellationRequested();
+                                                            UnifiedMemoryOperations.Add(left, right, result, accelerator);
+                                                        }, cancellationToken);
 
         /// <summary>
         /// Performs async element-wise multiplication of a buffer by a scalar.
@@ -311,14 +308,11 @@ namespace ILGPU.Runtime
             MemoryBuffer1D<T, Stride1D.Dense> result,
             Accelerator accelerator,
             CancellationToken cancellationToken = default)
-            where T : unmanaged, INumber<T>
-        {
-            return Task.Run(() =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                UnifiedMemoryOperations.MultiplyScalar(buffer, scalar, result, accelerator);
-            }, cancellationToken);
-        }
+            where T : unmanaged, INumber<T> => Task.Run(() =>
+                                                        {
+                                                            cancellationToken.ThrowIfCancellationRequested();
+                                                            UnifiedMemoryOperations.MultiplyScalar(buffer, scalar, result, accelerator);
+                                                        }, cancellationToken);
 
         /// <summary>
         /// Performs async reduction sum operation on a buffer.
@@ -332,13 +326,10 @@ namespace ILGPU.Runtime
             MemoryBuffer1D<T, Stride1D.Dense> buffer,
             Accelerator accelerator,
             CancellationToken cancellationToken = default)
-            where T : unmanaged, INumber<T>
-        {
-            return Task.Run(() =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                return UnifiedMemoryOperations.Sum(buffer, accelerator);
-            }, cancellationToken);
-        }
+            where T : unmanaged, INumber<T> => Task.Run(() =>
+                                                        {
+                                                            cancellationToken.ThrowIfCancellationRequested();
+                                                            return UnifiedMemoryOperations.Sum(buffer, accelerator);
+                                                        }, cancellationToken);
     }
 }

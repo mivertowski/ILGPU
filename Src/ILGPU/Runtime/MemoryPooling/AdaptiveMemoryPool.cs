@@ -116,12 +116,10 @@ namespace ILGPU.Runtime.MemoryPooling
         }
 
         /// <inheritdoc/>
-        public async Task<IPooledMemoryBuffer<T>> RentAsync(long minLength, CancellationToken ct = default)
-        {
+        public async Task<IPooledMemoryBuffer<T>> RentAsync(long minLength, CancellationToken ct = default) =>
             // For now, the async version is the same as sync since GPU allocation is typically fast
             // In the future, this could implement queuing for when the pool is full
-            return await Task.Run(() => Rent(minLength), ct).ConfigureAwait(false);
-        }
+            await Task.Run(() => Rent(minLength), ct).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public void Return(IPooledMemoryBuffer<T> buffer, bool clearBuffer = false)
@@ -241,10 +239,7 @@ namespace ILGPU.Runtime.MemoryPooling
         }
 
         /// <inheritdoc/>
-        public void SetRetentionPolicy(PoolRetentionPolicy policy)
-        {
-            config.RetentionPolicy = policy;
-        }
+        public void SetRetentionPolicy(PoolRetentionPolicy policy) => config.RetentionPolicy = policy;
 
         /// <inheritdoc/>
         public void Dispose()
@@ -289,22 +284,16 @@ namespace ILGPU.Runtime.MemoryPooling
             return (long)Math.Pow(factor, bucketIndex);
         }
 
-        private static long AlignUp(long value, int alignment)
-        {
-            return (value + alignment - 1) & ~(alignment - 1);
-        }
+        private static long AlignUp(long value, int alignment) => (value + alignment - 1) & ~(alignment - 1);
 
-        private bool ShouldKeepBuffer(long bucketSize, int currentCount)
+        private bool ShouldKeepBuffer(long bucketSize, int currentCount) => config.RetentionPolicy switch
         {
-            return config.RetentionPolicy switch
-            {
-                PoolRetentionPolicy.KeepAll => currentCount < config.MaxBuffersPerSize,
-                PoolRetentionPolicy.Adaptive => currentCount < GetAdaptiveMaxCount(bucketSize),
-                PoolRetentionPolicy.Aggressive => currentCount < config.MinBuffersToKeep,
-                PoolRetentionPolicy.Custom => currentCount < config.MaxBuffersPerSize,
-                _ => currentCount < config.MaxBuffersPerSize
-            };
-        }
+            PoolRetentionPolicy.KeepAll => currentCount < config.MaxBuffersPerSize,
+            PoolRetentionPolicy.Adaptive => currentCount < GetAdaptiveMaxCount(bucketSize),
+            PoolRetentionPolicy.Aggressive => currentCount < config.MinBuffersToKeep,
+            PoolRetentionPolicy.Custom => currentCount < config.MaxBuffersPerSize,
+            _ => currentCount < config.MaxBuffersPerSize
+        };
 
         private int GetAdaptiveMaxCount(long bucketSize)
         {
@@ -317,17 +306,14 @@ namespace ILGPU.Runtime.MemoryPooling
             return config.MaxBuffersPerSize;
         }
 
-        private int GetMinBuffersToKeep(long bucketSize)
+        private int GetMinBuffersToKeep(long bucketSize) => config.RetentionPolicy switch
         {
-            return config.RetentionPolicy switch
-            {
-                PoolRetentionPolicy.KeepAll => config.MaxBuffersPerSize,
-                PoolRetentionPolicy.Adaptive => GetAdaptiveMaxCount(bucketSize) / 2,
-                PoolRetentionPolicy.Aggressive => 0,
-                PoolRetentionPolicy.Custom => config.MinBuffersToKeep,
-                _ => config.MinBuffersToKeep
-            };
-        }
+            PoolRetentionPolicy.KeepAll => config.MaxBuffersPerSize,
+            PoolRetentionPolicy.Adaptive => GetAdaptiveMaxCount(bucketSize) / 2,
+            PoolRetentionPolicy.Aggressive => 0,
+            PoolRetentionPolicy.Custom => config.MinBuffersToKeep,
+            _ => config.MinBuffersToKeep
+        };
 
         private void PrewarmCommonSizes()
         {
@@ -423,10 +409,7 @@ namespace ILGPU.Runtime.MemoryPooling
                 }
             }
 
-            public void Dispose()
-            {
-                ReturnToPool();
-            }
+            public void Dispose() => ReturnToPool();
         }
     }
 }

@@ -220,10 +220,7 @@ namespace ILGPU.Runtime.Profiling
         }
 
         /// <inheritdoc/>
-        public IReadOnlyList<ProfileSessionReport> GetSessionReports()
-        {
-            return completedSessions.ToList();
-        }
+        public IReadOnlyList<ProfileSessionReport> GetSessionReports() => completedSessions.ToList();
 
         /// <inheritdoc/>
         public async Task ExportAsync(string filePath, ProfileExportFormat format, CancellationToken cancellationToken = default)
@@ -531,38 +528,32 @@ namespace ILGPU.Runtime.Profiling
             };
         }
 
-        private static SystemInformation GetSystemInformation()
+        private static SystemInformation GetSystemInformation() => new SystemInformation
         {
-            return new SystemInformation
-            {
-                OperatingSystem = Environment.OSVersion.ToString(),
-                RuntimeVersion = Environment.Version.ToString(),
-                ILGPUVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown",
-                TotalSystemMemory = GC.GetTotalMemory(false),
-                AvailableSystemMemory = GC.GetTotalMemory(false), // Simplified
-                ProcessorCount = Environment.ProcessorCount,
-                Is64BitProcess = Environment.Is64BitProcess
-            };
-        }
+            OperatingSystem = Environment.OSVersion.ToString(),
+            RuntimeVersion = Environment.Version.ToString(),
+            ILGPUVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown",
+            TotalSystemMemory = GC.GetTotalMemory(false),
+            AvailableSystemMemory = GC.GetTotalMemory(false), // Simplified
+            ProcessorCount = Environment.ProcessorCount,
+            Is64BitProcess = Environment.Is64BitProcess
+        };
 
-        private AcceleratorInformation GetAcceleratorInformation()
+        private AcceleratorInformation GetAcceleratorInformation() => new AcceleratorInformation
         {
-            return new AcceleratorInformation
+            AcceleratorType = accelerator.AcceleratorType,
+            Name = accelerator.Name,
+            DeviceMemorySize = accelerator.Memory.TotalMemory,
+            MaxGridSize = accelerator.MaxGridSize,
+            MaxGroupSize = accelerator.MaxGroupSize,
+            WarpSize = accelerator.WarpSize,
+            Capabilities = new Dictionary<string, object>
             {
-                AcceleratorType = accelerator.AcceleratorType,
-                Name = accelerator.Name,
-                DeviceMemorySize = accelerator.Memory.TotalMemory,
-                MaxGridSize = accelerator.MaxGridSize,
-                MaxGroupSize = accelerator.MaxGroupSize,
-                WarpSize = accelerator.WarpSize,
-                Capabilities = new Dictionary<string, object>
-                {
-                    ["SupportsUnifiedMemory"] = accelerator.Device.SupportsUnifiedMemory,
-                    ["SupportsMemoryPools"] = accelerator.Device.SupportsMemoryPools,
-                    ["DeviceStatus"] = accelerator.Device.Status.ToString()
-                }
-            };
-        }
+                ["SupportsUnifiedMemory"] = accelerator.Device.SupportsUnifiedMemory,
+                ["SupportsMemoryPools"] = accelerator.Device.SupportsMemoryPools,
+                ["DeviceStatus"] = accelerator.Device.Status.ToString()
+            }
+        };
 
         private Dictionary<string, object> GetAcceleratorSpecificMetrics()
         {
@@ -707,19 +698,15 @@ namespace ILGPU.Runtime.Profiling
             }
         }
 
-        private static async Task ExportToChromeTracingAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
-        {
+        private static async Task ExportToChromeTracingAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken) =>
             // Chrome Tracing format implementation would go here
             // For now, fallback to JSON
             await ExportToJsonAsync(filePath, reports, cancellationToken).ConfigureAwait(false);
-        }
 
-        private static async Task ExportToBinaryAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
-        {
+        private static async Task ExportToBinaryAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken) =>
             // Binary format implementation would go here
             // For now, fallback to JSON
             await ExportToJsonAsync(filePath, reports, cancellationToken).ConfigureAwait(false);
-        }
 
         #endregion
     }

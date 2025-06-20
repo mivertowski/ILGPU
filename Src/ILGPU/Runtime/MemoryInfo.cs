@@ -234,9 +234,7 @@ namespace ILGPU.Runtime
         /// <param name="newAvailableMemory">The new available memory value.</param>
         /// <param name="newUsedMemory">The new used memory value.</param>
         /// <returns>A new MemoryInfo instance with updated values.</returns>
-        public MemoryInfo WithUpdatedUsage(long newAvailableMemory, long newUsedMemory)
-        {
-            return new MemoryInfo(
+        public MemoryInfo WithUpdatedUsage(long newAvailableMemory, long newUsedMemory) => new MemoryInfo(
                 TotalMemory,
                 newAvailableMemory,
                 newUsedMemory,
@@ -247,7 +245,6 @@ namespace ILGPU.Runtime
                 SupportsZeroCopy,
                 CacheLineSize,
                 MemoryBandwidth);
-        }
 
         #endregion
 
@@ -258,9 +255,7 @@ namespace ILGPU.Runtime
         /// </summary>
         /// <param name="other">The other instance to compare.</param>
         /// <returns>True if the instances are equal.</returns>
-        public bool Equals(MemoryInfo? other)
-        {
-            return other != null &&
+        public bool Equals(MemoryInfo? other) => other != null &&
                    TotalMemory == other.TotalMemory &&
                    AvailableMemory == other.AvailableMemory &&
                    UsedMemory == other.UsedMemory &&
@@ -271,7 +266,6 @@ namespace ILGPU.Runtime
                    SupportsZeroCopy == other.SupportsZeroCopy &&
                    CacheLineSize == other.CacheLineSize &&
                    MemoryBandwidth == other.MemoryBandwidth;
-        }
 
         /// <summary>
         /// Determines whether this instance is equal to another object.

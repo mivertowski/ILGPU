@@ -176,7 +176,7 @@ namespace ILGPU.Runtime.MultiGPU
                             try
                             {
                                 UpdateGPULoad(gpu.Index, 1.0);
-                                await item.ExecuteAsync(gpu, cancellationToken);
+                                await item.ExecuteAsync(gpu, cancellationToken).ConfigureAwait(false);
                                 results.Add($"Completed: {item.Id}");
                                 Interlocked.Increment(ref totalOperations);
                             }
@@ -210,13 +210,13 @@ namespace ILGPU.Runtime.MultiGPU
                 }
 
                 // Wait for all tasks to complete
-                await Task.WhenAll(tasks);
+                await Task.WhenAll(tasks).ConfigureAwait(false);
 
                 // Final synchronization if needed
                 if (options.SynchronizationMode == SynchronizationMode.PerBatch ||
                     options.SynchronizationMode == SynchronizationMode.PerKernel)
                 {
-                    await SynchronizeAsync(cancellationToken);
+                    await SynchronizeAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 stopwatch.Stop();
@@ -262,7 +262,7 @@ namespace ILGPU.Runtime.MultiGPU
             try
             {
                 UpdateGPULoad(optimalGpu.Index, 1.0);
-                await workItem.ExecuteAsync(optimalGpu, cancellationToken);
+                await workItem.ExecuteAsync(optimalGpu, cancellationToken).ConfigureAwait(false);
                 Interlocked.Increment(ref totalOperations);
                 return $"Completed on GPU {optimalGpu.Index}";
             }
@@ -319,7 +319,7 @@ namespace ILGPU.Runtime.MultiGPU
                     try
                     {
                         UpdateGPULoad(gpu.Index, 1.0);
-                        return await processor(chunkCopy, gpu, cancellationToken);
+                        return await processor(chunkCopy, gpu, cancellationToken).ConfigureAwait(false);
                     }
                     finally
                     {
@@ -331,7 +331,7 @@ namespace ILGPU.Runtime.MultiGPU
             }
 
             // Wait for all chunks to be processed
-            var results = await Task.WhenAll(tasks);
+            var results = await Task.WhenAll(tasks).ConfigureAwait(false);
 
             // Combine results
             var totalLength = results.Sum(r => r.Length);
@@ -362,7 +362,7 @@ namespace ILGPU.Runtime.MultiGPU
                 gpu.Accelerator.Synchronize();
             }, cancellationToken));
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -463,7 +463,7 @@ namespace ILGPU.Runtime.MultiGPU
                 }
             }
 
-            await Task.CompletedTask;
+            await Task.CompletedTask.ConfigureAwait(false);
         }
 
         #endregion
@@ -654,7 +654,7 @@ namespace ILGPU.Runtime.MultiGPU
         {
             try
             {
-                await BalanceLoadAsync();
+                await BalanceLoadAsync().ConfigureAwait(false);
             }
             catch (Exception)
             {

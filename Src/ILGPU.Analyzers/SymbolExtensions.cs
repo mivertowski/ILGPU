@@ -22,8 +22,9 @@ namespace ILGPU.Analyzers
         /// </summary>
         /// <param name="typeSymbol">The type symbol to check.</param>
         /// <returns>True, if a primitive type.</returns>
-        public static bool IsPrimitiveType(this ITypeSymbol typeSymbol) =>
-            typeSymbol.SpecialType == SpecialType.System_SByte
+        public static bool IsPrimitiveType(this ITypeSymbol typeSymbol)
+        {
+            return typeSymbol.SpecialType == SpecialType.System_SByte
             || typeSymbol.SpecialType == SpecialType.System_Byte
             || typeSymbol.SpecialType == SpecialType.System_Int16
             || typeSymbol.SpecialType == SpecialType.System_UInt16
@@ -33,14 +34,17 @@ namespace ILGPU.Analyzers
             || typeSymbol.SpecialType == SpecialType.System_UInt64
             || typeSymbol.SpecialType == SpecialType.System_Single
             || typeSymbol.SpecialType == SpecialType.System_Double;
+        }
+
 
         /// <summary>
         /// Converts a primitive <see cref="SpecialType"/> to a <see cref="SyntaxKind"/>.
         /// </summary>
         /// <param name="specialType">The special type.</param>
         /// <returns>The syntax kind.</returns>
-        public static SyntaxKind ToSyntaxKind(this SpecialType specialType) =>
-            specialType switch
+        public static SyntaxKind ToSyntaxKind(this SpecialType specialType)
+        {
+            return specialType switch
             {
                 SpecialType.System_SByte => SyntaxKind.SByteKeyword,
                 SpecialType.System_Byte => SyntaxKind.ByteKeyword,
@@ -54,19 +58,24 @@ namespace ILGPU.Analyzers
                 SpecialType.System_Double => SyntaxKind.DoubleKeyword,
                 _ => throw new NotSupportedException(),
             };
+        }
+
 
         /// <summary>
         /// Converts an <see cref="Accessibility"/> to a <see cref="SyntaxKind"/>.
         /// </summary>
         /// <param name="accessibility">The accessibility.</param>
         /// <returns>The syntax kind.</returns>
-        public static SyntaxKind ToSyntaxKind(this Accessibility accessibility) =>
-            accessibility switch
+        public static SyntaxKind ToSyntaxKind(this Accessibility accessibility)
+        {
+            return accessibility switch
             {
                 Accessibility.Public => SyntaxKind.PublicKeyword,
                 Accessibility.Private => SyntaxKind.PrivateKeyword,
                 Accessibility.Internal => SyntaxKind.InternalKeyword,
                 _ => throw new NotSupportedException(),
             };
+        }
+
     }
 }

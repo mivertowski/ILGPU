@@ -17,7 +17,10 @@ namespace ILGPU.Analyzers.Tests.Generic
     public static class ModuleInitializer
     {
         [ModuleInitializer]
-        public static void Init() =>
+        public static void Init()
+        {
             VerifySourceGenerators.Initialize();
+        }
+
     }
 }

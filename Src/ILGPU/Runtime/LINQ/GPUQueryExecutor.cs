@@ -149,11 +149,9 @@ namespace ILGPU.Runtime.LINQ
         /// </summary>
         /// <param name="node">The constant expression.</param>
         /// <returns>The constant value.</returns>
-        protected override Expression VisitConstant(ConstantExpression node)
-        {
+        protected override Expression VisitConstant(ConstantExpression node) =>
             // Return the constant value directly
-            return node;
-        }
+            node;
 
         /// <summary>
         /// Handles LINQ method calls by converting them to GPU operations.
@@ -226,25 +224,13 @@ namespace ILGPU.Runtime.LINQ
         /// </summary>
         /// <param name="methodCall">The method call expression.</param>
         /// <returns>The result expression.</returns>
-        private Expression HandleSum(MethodCallExpression methodCall)
-        {
-            return HandleReduction(methodCall, "Sum");
-        }
+        private Expression HandleSum(MethodCallExpression methodCall) => HandleReduction(methodCall, "Sum");
 
-        private Expression HandleAverage(MethodCallExpression methodCall)
-        {
-            return HandleReduction(methodCall, "Average");
-        }
+        private Expression HandleAverage(MethodCallExpression methodCall) => HandleReduction(methodCall, "Average");
 
-        private Expression HandleMin(MethodCallExpression methodCall)
-        {
-            return HandleReduction(methodCall, "Min");
-        }
+        private Expression HandleMin(MethodCallExpression methodCall) => HandleReduction(methodCall, "Min");
 
-        private Expression HandleMax(MethodCallExpression methodCall)
-        {
-            return HandleReduction(methodCall, "Max");
-        }
+        private Expression HandleMax(MethodCallExpression methodCall) => HandleReduction(methodCall, "Max");
 
         /// <summary>
         /// Handles generic reduction operations.

@@ -45,10 +45,7 @@ namespace ILGPU.Runtime.Profiling
         public Index3D GroupSize { get; }
         public DateTime StartTime { get; }
 
-        public void RecordCompilation(TimeSpan compilationTime)
-        {
-            this.compilationTime = compilationTime;
-        }
+        public void RecordCompilation(TimeSpan compilationTime) => this.compilationTime = compilationTime;
 
         public void RecordLaunchParameters(int sharedMemorySize, int registerCount)
         {
@@ -83,10 +80,7 @@ namespace ILGPU.Runtime.Profiling
             profiler.CompleteKernelExecution(executionId, record);
         }
 
-        public void AddMetadata(string key, object value)
-        {
-            metadata[key] = value;
-        }
+        public void AddMetadata(string key, object value) => metadata[key] = value;
 
         public void Dispose()
         {

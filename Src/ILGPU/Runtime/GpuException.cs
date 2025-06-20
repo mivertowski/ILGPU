@@ -133,38 +133,35 @@ namespace ILGPU.Runtime
         /// Gets recovery suggestions based on the error code.
         /// </summary>
         /// <returns>An enumerable of recovery suggestions.</returns>
-        protected virtual IEnumerable<string> GetRecoverySuggestions()
+        protected virtual IEnumerable<string> GetRecoverySuggestions() => ErrorCode switch
         {
-            return ErrorCode switch
+            GpuErrorCode.OutOfMemory => new[]
             {
-                GpuErrorCode.OutOfMemory => new[]
-                {
                     "Reduce memory buffer sizes",
                     "Dispose unused memory buffers",
                     "Enable memory pooling to reuse buffers",
                     "Consider using paged memory for large allocations"
                 },
-                GpuErrorCode.DeviceNotFound => new[]
-                {
+            GpuErrorCode.DeviceNotFound => new[]
+            {
                     "Verify GPU drivers are installed and up to date",
                     "Check that the device is properly connected",
                     "Ensure the accelerator type matches available hardware"
                 },
-                GpuErrorCode.KernelLaunchFailed => new[]
-                {
+            GpuErrorCode.KernelLaunchFailed => new[]
+            {
                     "Check kernel parameters and memory bounds",
                     "Verify kernel configuration is valid",
                     "Ensure all memory buffers are properly allocated"
                 },
-                GpuErrorCode.InvalidOperation => new[]
-                {
+            GpuErrorCode.InvalidOperation => new[]
+            {
                     "Check that the operation is supported on this device",
                     "Verify the current device state",
                     "Ensure proper initialization before operation"
                 },
-                _ => new[] { "Consult ILGPU documentation for troubleshooting guidance" }
-            };
-        }
+            _ => new[] { "Consult ILGPU documentation for troubleshooting guidance" }
+        };
 
         /// <summary>
         /// Creates a string representation of the exception with enhanced error information.

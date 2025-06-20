@@ -85,10 +85,7 @@ namespace ILGPU.Runtime
         public static void GenerateSharedMemorySpecification<TEmitter>(
             EntryPoint entryPoint,
             in TEmitter emitter)
-            where TEmitter : struct, ISourceEmitter
-        {
-            emitter.EmitStatement($"var sharedMemSpec = new SharedMemorySpecification({entryPoint.SharedMemory.StaticSize}, {(entryPoint.SharedMemory.HasDynamicMemory ? "true" : "false")});");
-        }
+            where TEmitter : struct, ISourceEmitter => emitter.EmitStatement($"var sharedMemSpec = new SharedMemorySpecification({entryPoint.SharedMemory.StaticSize}, {(entryPoint.SharedMemory.HasDynamicMemory ? "true" : "false")});");
 
         /// <summary>
         /// Generates a kernel-dimension configuration for AOT compilation.
@@ -253,10 +250,7 @@ namespace ILGPU.Runtime
             string kernelArgumentName,
             in TEmitter emitter)
             where T : Kernel
-            where TEmitter : struct, ISourceEmitter
-        {
-            emitter.EmitStatement($"var typedKernel = ({typeof(T).Name}){kernelArgumentName};");
-        }
+            where TEmitter : struct, ISourceEmitter => emitter.EmitStatement($"var typedKernel = ({typeof(T).Name}){kernelArgumentName};");
 
         /// <summary>
         /// Generates code for loading a typed accelerator stream from a generic
@@ -270,10 +264,7 @@ namespace ILGPU.Runtime
             string streamArgumentName,
             in TEmitter emitter)
             where T : AcceleratorStream
-            where TEmitter : struct, ISourceEmitter
-        {
-            emitter.EmitStatement($"var typedStream = ({typeof(T).Name}){streamArgumentName};");
-        }
+            where TEmitter : struct, ISourceEmitter => emitter.EmitStatement($"var typedStream = ({typeof(T).Name}){streamArgumentName};");
 
         #endregion
 
@@ -282,12 +273,9 @@ namespace ILGPU.Runtime
         /// <summary>
         /// Checks if the index type has the specified property.
         /// </summary>
-        private static bool HasIndexProperty(Type indexType, string propertyName)
-        {
-            return indexType.GetProperty(
+        private static bool HasIndexProperty(Type indexType, string propertyName) => indexType.GetProperty(
                 propertyName,
                 BindingFlags.Public | BindingFlags.Instance) != null;
-        }
 
         #endregion
     }

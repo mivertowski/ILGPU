@@ -86,10 +86,7 @@ namespace ILGPU.Runtime.KernelCache
         /// </summary>
         /// <param name="ttl">The time-to-live duration.</param>
         /// <returns>True if the entry is expired.</returns>
-        public bool IsExpired(TimeSpan ttl)
-        {
-            return DateTime.UtcNow - Timestamp > ttl;
-        }
+        public bool IsExpired(TimeSpan ttl) => DateTime.UtcNow - Timestamp > ttl;
     }
 
     /// <summary>

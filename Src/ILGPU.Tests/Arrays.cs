@@ -196,7 +196,11 @@ namespace ILGPU.Tests
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal static T GetArrayValue<T>(T[] array, int localIndex)
-            where T : unmanaged => array[localIndex];
+            where T : unmanaged
+        {
+            return array[localIndex];
+        }
+
 
         [Theory]
         [MemberData(nameof(ArraySimpleTestData))]
@@ -400,8 +404,11 @@ namespace ILGPU.Tests
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static T GetValue<T>(ArrayInStruct<T> data, int index)
-            where T : unmanaged =>
-            data[index];
+            where T : unmanaged
+        {
+            return data[index];
+        }
+
 
         internal static void ArrayInStructureKernel<T, TArraySize>(
             Index1D index,

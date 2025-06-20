@@ -225,10 +225,7 @@ namespace ILGPU.Runtime.MultiGPU
         /// </summary>
         /// <param name="gpu">The GPU to check.</param>
         /// <returns>True if the work item can be executed on the GPU.</returns>
-        public virtual bool CanExecuteOn(GPUInfo gpu)
-        {
-            return gpu.IsActive && gpu.MemoryInfo.TotalMemory >= MemoryRequirement;
-        }
+        public virtual bool CanExecuteOn(GPUInfo gpu) => gpu.IsActive && gpu.MemoryInfo.TotalMemory >= MemoryRequirement;
     }
 
     /// <summary>

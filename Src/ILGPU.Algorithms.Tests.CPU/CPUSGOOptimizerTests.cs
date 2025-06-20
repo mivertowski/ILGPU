@@ -38,8 +38,10 @@ namespace ILGPU.Algorithms.Tests.CPU
         public readonly record struct TestBreakFunction(float Goal) :
             ICPUOptimizationBreakFunction<float>
         {
-            public bool Break(float evalType, int iteration) =>
-                Math.Abs(evalType - Goal) < 1e-3f || iteration > 1000;
+            public bool Break(float evalType, int iteration)
+            {
+                return Math.Abs(evalType - Goal) < 1e-3f || iteration > 1000;
+            }
         }
 
         /// <summary>
@@ -48,13 +50,17 @@ namespace ILGPU.Algorithms.Tests.CPU
         /// </summary>
         public readonly record struct HimmelblauFunction : IOptimizerTestFunction
         {
-            public float Evaluate(ReadOnlySpan<float> position) =>
-                OptimizationTests.HimmelblauFunction.Evaluate(
+            public float Evaluate(ReadOnlySpan<float> position)
+            {
+                return OptimizationTests.HimmelblauFunction.Evaluate(
                     position[0],
                     position[1]);
+            }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
 
             public float Result =>
                 new OptimizationTests.HimmelblauFunction().Result;
@@ -70,13 +76,17 @@ namespace ILGPU.Algorithms.Tests.CPU
         /// </summary>
         public readonly record struct EasomFunction : IOptimizerTestFunction
         {
-            public float Evaluate(ReadOnlySpan<float> position) =>
-                OptimizationTests.EasomFunction.Evaluate(
+            public float Evaluate(ReadOnlySpan<float> position)
+            {
+                return OptimizationTests.EasomFunction.Evaluate(
                     position[0],
                     position[1]);
+            }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
 
             public float Result =>
                 new OptimizationTests.EasomFunction().Result;
@@ -91,13 +101,17 @@ namespace ILGPU.Algorithms.Tests.CPU
         /// </summary>
         public readonly record struct ShafferFunction4 : IOptimizerTestFunction
         {
-            public float Evaluate(ReadOnlySpan<float> position) =>
-                OptimizationTests.ShafferFunction4.Evaluate(
+            public float Evaluate(ReadOnlySpan<float> position)
+            {
+                return OptimizationTests.ShafferFunction4.Evaluate(
                     position[0],
                     position[1]);
+            }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
 
             public float Result =>
                 new OptimizationTests.ShafferFunction4().Result;
@@ -113,13 +127,17 @@ namespace ILGPU.Algorithms.Tests.CPU
         /// </summary>
         public readonly record struct RosenbrockDisk : IOptimizerTestFunction
         {
-            public float Evaluate(ReadOnlySpan<float> position) =>
-                OptimizationTests.RosenbrockDisk.Evaluate(
+            public float Evaluate(ReadOnlySpan<float> position)
+            {
+                return OptimizationTests.RosenbrockDisk.Evaluate(
                     position[0],
                     position[1]);
+            }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
 
             public float Result =>
                 new OptimizationTests.RosenbrockDisk().Result;
@@ -135,13 +153,18 @@ namespace ILGPU.Algorithms.Tests.CPU
         /// </summary>
         public readonly record struct GomezAndLevyFunction : IOptimizerTestFunction
         {
-            public float Evaluate(ReadOnlySpan<float> position) =>
-                OptimizationTests.GomezAndLevyFunction.Evaluate(
+            public float Evaluate(ReadOnlySpan<float> position)
+            {
+                return OptimizationTests.GomezAndLevyFunction.Evaluate(
                     position[0],
                     position[1]);
+            }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
+
 
             public float Result =>
                 new OptimizationTests.GomezAndLevyFunction().Result;

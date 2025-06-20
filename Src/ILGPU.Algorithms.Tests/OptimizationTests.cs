@@ -66,8 +66,11 @@ namespace ILGPU.Algorithms.Tests
                 return result / dimension;
             }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current <= proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current <= proposed;
+            }
+
         }
 
         /// <summary>
@@ -117,8 +120,10 @@ namespace ILGPU.Algorithms.Tests
                 return Evaluate(first.X, first.Y);
             }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
         }
 
         /// <summary>
@@ -168,8 +173,10 @@ namespace ILGPU.Algorithms.Tests
                 return Evaluate(first.X, first.Y);
             }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
         }
 
         /// <summary>
@@ -219,8 +226,10 @@ namespace ILGPU.Algorithms.Tests
                 return Evaluate(first.X, first.Y);
             }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
         }
 
         /// <summary>
@@ -273,8 +282,10 @@ namespace ILGPU.Algorithms.Tests
                 return Evaluate(first.X, first.Y);
             }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
         }
 
         /// <summary>
@@ -330,8 +341,11 @@ namespace ILGPU.Algorithms.Tests
                 return Evaluate(first.X, first.Y);
             }
 
-            public bool CurrentIsBetter(float current, float proposed) =>
-                current < proposed;
+            public bool CurrentIsBetter(float current, float proposed)
+            {
+                return current < proposed;
+            }
+
         }
 
         #endregion

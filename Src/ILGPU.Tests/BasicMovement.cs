@@ -92,8 +92,11 @@ namespace ILGPU.Tests
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WriteToTarget(
             int index,
-            ArrayView1D<Int2, Stride1D.Dense> target) =>
+            ArrayView1D<Int2, Stride1D.Dense> target)
+        {
             target[index] = new Int2(42, 42);
+        }
+
 
         internal static void MoveLoadsStoresCallKernel(
             ArrayView1D<int, Stride1D.Dense> source,

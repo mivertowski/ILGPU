@@ -105,10 +105,7 @@ namespace ILGPU.Runtime
         /// <summary>
         /// Releases all resources used by this kernel execution result.
         /// </summary>
-        public void Dispose()
-        {
-            cancellationRegistration.Dispose();
-        }
+        public void Dispose() => cancellationRegistration.Dispose();
     }
 
     /// <summary>

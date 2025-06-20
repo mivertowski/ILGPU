@@ -28,7 +28,11 @@ namespace ILGPU.Tests
         { }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static int GetValue() => 42;
+        internal static int GetValue()
+        {
+            return 42;
+        }
+
 
         internal static void NestedCallKernel(
             Index1D index,
@@ -49,14 +53,17 @@ namespace ILGPU.Tests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static Parent GetStructureValue() =>
-            new Parent()
+        internal static Parent GetStructureValue()
+        {
+            return new Parent()
             {
                 Second = new Nested()
                 {
                     Value = 23
                 }
             };
+        }
+
 
         internal static void NestedStructureCallKernel(
             Index1D index,
@@ -77,8 +84,11 @@ namespace ILGPU.Tests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void GetValue(out int value) =>
+        internal static void GetValue(out int value)
+        {
             value = 42;
+        }
+
 
         internal static void NestedCallOutKernel(
             Index1D index,
@@ -100,7 +110,8 @@ namespace ILGPU.Tests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void GetStructureValue(out Parent value) =>
+        internal static void GetStructureValue(out Parent value)
+        {
             value = new Parent()
             {
                 Second = new Nested()
@@ -108,6 +119,8 @@ namespace ILGPU.Tests
                     Value = 23
                 }
             };
+        }
+
 
         internal static void NestedStructureCallOutKernel(
             Index1D index,
@@ -266,13 +279,18 @@ namespace ILGPU.Tests
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static VariableView<Int2> GetVariableViewNested(
             Index1D index,
-            ArrayView1D<Int2, Stride1D.Dense> source) =>
-            source.VariableView(index);
+            ArrayView1D<Int2, Stride1D.Dense> source)
+        {
+            return source.VariableView(index);
+        }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static VariableView<int> GetVariableSubViewNested(
-            VariableView<Int2> source) =>
-            source.SubView<int>(sizeof(int));
+            VariableView<Int2> source)
+        {
+            return source.SubView<int>(sizeof(int));
+        }
+
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static VariableView<int> GetVariableSubViewRoot(

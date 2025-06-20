@@ -35,14 +35,14 @@ namespace ILGPU.Runtime
         /// <param name="target">The target instance for instance methods (null for static).</param>
         /// <returns>A delegate of type TDelegate.</returns>
         public static TDelegate CreateDelegate<TDelegate>(MethodInfo method, object? target = null)
-            where TDelegate : Delegate
-        {
+            where TDelegate : Delegate =>
 #if NATIVE_AOT || AOT_COMPATIBLE
             return CreateAOTDelegate<TDelegate>(method, target);
 #else
-            return CreateRuntimeDelegate<TDelegate>(method, target);
+            CreateRuntimeDelegate<TDelegate>(method, target);
 #endif
-        }
+
+
 
         /// <summary>
         /// Creates or retrieves a delegate for the specified method and delegate type.
@@ -51,14 +51,14 @@ namespace ILGPU.Runtime
         /// <param name="method">The method to create a delegate for.</param>
         /// <param name="target">The target instance for instance methods (null for static).</param>
         /// <returns>A delegate of the specified type.</returns>
-        public static Delegate CreateDelegate(Type delegateType, MethodInfo method, object? target = null)
-        {
+        public static Delegate CreateDelegate(Type delegateType, MethodInfo method, object? target = null) =>
 #if NATIVE_AOT || AOT_COMPATIBLE
             return CreateAOTDelegate(delegateType, method, target);
 #else
-            return CreateRuntimeDelegate(delegateType, method, target);
+            CreateRuntimeDelegate(delegateType, method, target);
 #endif
-        }
+
+
 
 #if NATIVE_AOT || AOT_COMPATIBLE
         /// <summary>

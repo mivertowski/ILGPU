@@ -330,19 +330,13 @@ namespace ILGPU
         /// </summary>
         /// <param name="kernelName">The kernel name.</param>
         /// <returns>The compiled kernel entry, or null if not found.</returns>
-        public CompiledKernelEntry? GetCompiledKernel(string kernelName)
-        {
-            return compiledKernels.TryGetValue(kernelName, out var entry) ? entry : null;
-        }
+        public CompiledKernelEntry? GetCompiledKernel(string kernelName) => compiledKernels.TryGetValue(kernelName, out var entry) ? entry : null;
 
         /// <summary>
         /// Gets all compiled kernels.
         /// </summary>
         /// <returns>A collection of all compiled kernel entries.</returns>
-        public IEnumerable<CompiledKernelEntry> GetAllCompiledKernels()
-        {
-            return compiledKernels.Values;
-        }
+        public IEnumerable<CompiledKernelEntry> GetAllCompiledKernels() => compiledKernels.Values;
 
         /// <summary>
         /// Gets the complete generated source code.

@@ -34,7 +34,11 @@ namespace ILGPU.Tests
         /// <typeparam name="T">The element type.</typeparam>
         /// <param name="data">The data element.</param>
         /// <returns>The wrapped test data instance.</returns>
-        public static TestData<T> Create<T>(T data) => new TestData<T>(data);
+        public static TestData<T> Create<T>(T data)
+        {
+            return new TestData<T>(data);
+        }
+
     }
 
     /// <summary>
@@ -65,7 +69,11 @@ namespace ILGPU.Tests
             info.AddValue(nameof(Value), Value);
         }
 
-        public override string ToString() => $"{Value}";
+        public override string ToString()
+        {
+            return $"{Value}";
+        }
+
     }
 
     #region Data Structures
@@ -90,12 +98,23 @@ namespace ILGPU.Tests
 
         public void Serialize(IXunitSerializationInfo info) { }
 
-        public bool Equals(EmptyStruct other) => true;
+        public bool Equals(EmptyStruct other)
+        {
+            return true;
+        }
 
-        public override bool Equals(object? obj) =>
-            obj is EmptyStruct other && Equals(other);
 
-        public override int GetHashCode() => 0;
+        public override bool Equals(object? obj)
+        {
+            return obj is EmptyStruct other && Equals(other);
+        }
+
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
+
     }
 
     [Serializable]
@@ -108,10 +127,17 @@ namespace ILGPU.Tests
 
         public void Serialize(IXunitSerializationInfo info) { }
 
-        public bool Equals(NoHashCodeStruct other) => true;
+        public bool Equals(NoHashCodeStruct other)
+        {
+            return true;
+        }
 
-        public override bool Equals(object? obj) =>
-            obj is NoHashCodeStruct other && Equals(other);
+
+        public override bool Equals(object? obj)
+        {
+            return obj is NoHashCodeStruct other && Equals(other);
+        }
+
     }
 
     public static class PairStruct
@@ -149,10 +175,17 @@ namespace ILGPU.Tests
             info.AddValue(nameof(Val1), Val1);
         }
 
-        public override int GetHashCode() =>
-            HashCode.Combine(Val0, Val1);
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Val0, Val1);
+        }
 
-        public override string ToString() => $"{Val0}, {Val1}";
+
+        public override string ToString()
+        {
+            return $"{Val0}, {Val1}";
+        }
+
     }
 
     [Serializable]
@@ -179,17 +212,26 @@ namespace ILGPU.Tests
             info.AddValue(nameof(W), W);
         }
 
-        public bool Equals(TestStruct other) =>
-            X == other.X &&
+        public bool Equals(TestStruct other)
+        {
+            return X == other.X &&
             Y == other.Y &&
             Z == other.Z &&
             W == other.W;
+        }
 
-        public override bool Equals(object? obj) =>
-            obj is TestStruct other && Equals(other);
 
-        public override int GetHashCode() =>
-            HashCode.Combine(X, Y, Z, W);
+        public override bool Equals(object? obj)
+        {
+            return obj is TestStruct other && Equals(other);
+        }
+
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Z, W);
+        }
+
     }
 
     [Serializable]
@@ -220,10 +262,17 @@ namespace ILGPU.Tests
             info.AddValue(nameof(Val2), Val2);
         }
 
-        public override int GetHashCode() =>
-            HashCode.Combine(Val0, Val1, Val2);
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Val0, Val1, Val2);
+        }
 
-        public override string ToString() => $"{Val0}, {Val1}, {Val2}";
+
+        public override string ToString()
+        {
+            return $"{Val0}, {Val1}, {Val2}";
+        }
+
     }
 
     [Serializable]
@@ -259,24 +308,43 @@ namespace ILGPU.Tests
             set => data.Val1 = value;
         }
 
-        public void Deserialize(IXunitSerializationInfo info) =>
+        public void Deserialize(IXunitSerializationInfo info)
+        {
             data.Deserialize(info);
+        }
 
-        public void Serialize(IXunitSerializationInfo info) =>
+
+        public void Serialize(IXunitSerializationInfo info)
+        {
             data.Serialize(info);
+        }
 
-        public bool Equals(TestStructEquatable<T> other) =>
-            Val0 == other.Val0 &&
+
+        public bool Equals(TestStructEquatable<T> other)
+        {
+            return Val0 == other.Val0 &&
             Val2 == other.Val2 &&
             Val1.Equals(other.Val1);
+        }
 
-        public override bool Equals(object? obj) =>
-            obj is TestStructEquatable<T> other && Equals(other);
 
-        public override int GetHashCode() =>
-            HashCode.Combine(Val0, Val1, Val2);
+        public override bool Equals(object? obj)
+        {
+            return obj is TestStructEquatable<T> other && Equals(other);
+        }
 
-        public override string ToString() => data.ToString();
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Val0, Val1, Val2);
+        }
+
+
+        public override string ToString()
+        {
+            return data.ToString();
+        }
+
     }
 
     [Serializable]
@@ -308,10 +376,17 @@ namespace ILGPU.Tests
             info.AddValue(nameof(Val2), Val2);
         }
 
-        public override int GetHashCode() =>
-            HashCode.Combine(Val0, Val1, Val2);
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Val0, Val1, Val2);
+        }
 
-        public override string ToString() => $"{Val0}, {Val1}, {Val2}";
+
+        public override string ToString()
+        {
+            return $"{Val0}, {Val1}, {Val2}";
+        }
+
     }
 
     [Serializable]
@@ -348,23 +423,43 @@ namespace ILGPU.Tests
             set => data.Val2 = value;
         }
 
-        public void Deserialize(IXunitSerializationInfo info) =>
+        public void Deserialize(IXunitSerializationInfo info)
+        {
             data.Deserialize(info);
+        }
 
-        public void Serialize(IXunitSerializationInfo info) =>
+
+        public void Serialize(IXunitSerializationInfo info)
+        {
             data.Serialize(info);
+        }
 
-        public bool Equals(TestStructEquatable<T1, T2> other) =>
-            Val1 == other.Val1 &&
+
+        public bool Equals(TestStructEquatable<T1, T2> other)
+        {
+            return Val1 == other.Val1 &&
             Val0.Equals(other.Val0) &&
             Val2.Equals(other.Val2);
+        }
 
-        public override bool Equals(object? obj) =>
-            obj is TestStructEquatable<T1, T2> other && Equals(other);
 
-        public override int GetHashCode() => data.GetHashCode();
+        public override bool Equals(object? obj)
+        {
+            return obj is TestStructEquatable<T1, T2> other && Equals(other);
+        }
 
-        public override string ToString() => data.ToString();
+
+        public override int GetHashCode()
+        {
+            return data.GetHashCode();
+        }
+
+
+        public override string ToString()
+        {
+            return data.ToString();
+        }
+
     }
 
     public struct DeepStructure<T> : IXunitSerializable
@@ -418,11 +513,17 @@ namespace ILGPU.Tests
 
         public T Val2 => Value.Val2.Val2.Val2.Val2;
 
-        public void Deserialize(IXunitSerializationInfo info) =>
+        public void Deserialize(IXunitSerializationInfo info)
+        {
             Value.Deserialize(info);
+        }
 
-        public void Serialize(IXunitSerializationInfo info) =>
+
+        public void Serialize(IXunitSerializationInfo info)
+        {
             Value.Serialize(info);
+        }
+
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 64)]
@@ -430,11 +531,17 @@ namespace ILGPU.Tests
     {
         public byte Data;
 
-        public void Deserialize(IXunitSerializationInfo info) =>
+        public void Deserialize(IXunitSerializationInfo info)
+        {
             Data = info.GetValue<byte>(nameof(Data));
+        }
 
-        public void Serialize(IXunitSerializationInfo info) =>
+
+        public void Serialize(IXunitSerializationInfo info)
+        {
             info.AddValue(nameof(Data), Data);
+        }
+
     }
 
     [StructLayout(LayoutKind.Sequential, Size = 512)]
@@ -442,11 +549,17 @@ namespace ILGPU.Tests
     {
         public byte Data;
 
-        public void Deserialize(IXunitSerializationInfo info) =>
+        public void Deserialize(IXunitSerializationInfo info)
+        {
             Data = info.GetValue<byte>(nameof(Data));
+        }
 
-        public void Serialize(IXunitSerializationInfo info) =>
+
+        public void Serialize(IXunitSerializationInfo info)
+        {
             info.AddValue(nameof(Data), Data);
+        }
+
     }
 
     public unsafe struct ShortFixedBufferStruct : IXunitSerializable

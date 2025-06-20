@@ -52,8 +52,11 @@ namespace ILGPU.Algorithms.Tests
                 return Math.Abs(x - y) < Margin;
             }
 
-            public override int GetHashCode(Half obj) =>
-                obj.GetHashCode();
+            public override int GetHashCode(Half obj)
+            {
+                return obj.GetHashCode();
+            }
+
         }
 
         /// <summary>
@@ -84,8 +87,10 @@ namespace ILGPU.Algorithms.Tests
                 return Math.Abs(x - y) < Margin;
             }
 
-            public override int GetHashCode(float obj) =>
-                obj.GetHashCode();
+            public override int GetHashCode(float obj)
+            {
+                return obj.GetHashCode();
+            }
         }
 
         /// <summary>
@@ -116,8 +121,10 @@ namespace ILGPU.Algorithms.Tests
                 return Math.Abs(x - y) < Margin;
             }
 
-            public override int GetHashCode(double obj) =>
-                obj.GetHashCode();
+            public override int GetHashCode(double obj)
+            {
+                return obj.GetHashCode();
+            }
         }
 
         /// <summary>
@@ -156,8 +163,10 @@ namespace ILGPU.Algorithms.Tests
                 return false;
             }
 
-            public override int GetHashCode(Half obj) =>
-                obj.GetHashCode();
+            public override int GetHashCode(Half obj)
+            {
+                return obj.GetHashCode();
+            }
         }
 
         /// <summary>
@@ -196,8 +205,10 @@ namespace ILGPU.Algorithms.Tests
                 return false;
             }
 
-            public override int GetHashCode(float obj) =>
-                obj.GetHashCode();
+            public override int GetHashCode(float obj)
+            {
+                return obj.GetHashCode();
+            }
         }
 
         /// <summary>
@@ -236,8 +247,11 @@ namespace ILGPU.Algorithms.Tests
                 return false;
             }
 
-            public override int GetHashCode(double obj) =>
-                obj.GetHashCode();
+            public override int GetHashCode(double obj)
+            {
+                return obj.GetHashCode();
+            }
+
         }
 
         /// <summary>

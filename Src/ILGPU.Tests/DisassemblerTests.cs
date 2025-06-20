@@ -37,7 +37,11 @@ namespace ILGPU.Tests
 
         internal struct IdentityImpl : IPrefixOffsetFunc, IXunitSerializable
         {
-            public int Apply(int value) => value;
+            public int Apply(int value)
+            {
+                return value;
+            }
+
 
             public void Serialize(IXunitSerializationInfo info) { }
 

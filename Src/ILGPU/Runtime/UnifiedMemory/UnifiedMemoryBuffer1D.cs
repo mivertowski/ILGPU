@@ -129,10 +129,7 @@ namespace ILGPU.Runtime.UnifiedMemory
         /// Pins the memory to prevent migration.
         /// </summary>
         /// <returns>A disposable scope that unpins the memory when disposed.</returns>
-        public IDisposable Pin()
-        {
-            return new PinScope();
-        }
+        public IDisposable Pin() => new PinScope();
 
         /// <summary>
         /// A simple pin scope implementation.
@@ -169,7 +166,7 @@ namespace ILGPU.Runtime.UnifiedMemory
             AcceleratorStream stream)
         {
             Transform(operation, stream);
-            await stream.SynchronizeAsync();
+            await stream.SynchronizeAsync().ConfigureAwait(false);
         }
 
         /// <summary>

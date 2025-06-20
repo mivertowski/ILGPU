@@ -338,7 +338,7 @@ namespace ILGPU.Runtime.KernelCache
                 {
                     // Log error but don't throw - preloading is best-effort
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace ILGPU.Runtime.KernelCache
                 {
                     // Log error but don't throw - persistence is best-effort
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -516,9 +516,6 @@ namespace ILGPU.Runtime.KernelCache
         /// <param name="optimizationLevel">The optimization level.</param>
         /// <param name="targetArchitecture">The target architecture.</param>
         /// <returns>A version string.</returns>
-        public static string CreateVersionString(string compilerVersion, string optimizationLevel, string targetArchitecture)
-        {
-            return $"{compilerVersion}_{optimizationLevel}_{targetArchitecture}";
-        }
+        public static string CreateVersionString(string compilerVersion, string optimizationLevel, string targetArchitecture) => $"{compilerVersion}_{optimizationLevel}_{targetArchitecture}";
     }
 }

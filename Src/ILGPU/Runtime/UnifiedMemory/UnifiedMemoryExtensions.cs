@@ -48,10 +48,7 @@ namespace ILGPU.Runtime.UnifiedMemory
         /// </summary>
         /// <param name="accelerator">The accelerator to check.</param>
         /// <returns>True if unified memory is supported; otherwise, false.</returns>
-        public static bool SupportsUnifiedMemory(this Accelerator accelerator)
-        {
-            return accelerator?.Device?.SupportsUnifiedMemory ?? false;
-        }
+        public static bool SupportsUnifiedMemory(this Accelerator accelerator) => accelerator?.Device?.SupportsUnifiedMemory ?? false;
 
         /// <summary>
         /// Creates a unified memory view from a memory buffer.
@@ -126,9 +123,6 @@ namespace ILGPU.Runtime.UnifiedMemory
             this MemoryBuffer1D<T, Stride1D.Dense> source,
             MemoryBuffer1D<T, Stride1D.Dense> destination,
             AcceleratorStream stream)
-            where T : unmanaged
-        {
-            UnifiedMemoryOperations.OptimizedCopy(source, destination, stream);
-        }
+            where T : unmanaged => UnifiedMemoryOperations.OptimizedCopy(source, destination, stream);
     }
 }

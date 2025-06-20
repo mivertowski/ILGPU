@@ -178,16 +178,21 @@ namespace ILGPU.Tests
         /// </summary>
         /// <param name="dimension">The dimension.</param>
         /// <param name="arguments">The arguments.</param>
-        public void Execute(int dimension, params object[] arguments) =>
+        public void Execute(int dimension, params object[] arguments)
+        {
             Execute(new Index1D(dimension), arguments);
+        }
 
         /// <summary>
         /// Executes an implicitly linked kernel with the given arguments.
         /// </summary>
         /// <param name="dimension">The dimension.</param>
         /// <param name="arguments">The arguments.</param>
-        public void Execute(long dimension, params object[] arguments) =>
+        public void Execute(long dimension, params object[] arguments)
+        {
             Execute(new LongIndex1D(dimension).ToIntIndex(), arguments);
+        }
+
 
         /// <summary>
         /// Executes an implicitly linked kernel with the given arguments.

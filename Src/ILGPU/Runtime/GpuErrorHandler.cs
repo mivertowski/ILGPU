@@ -87,10 +87,7 @@ namespace ILGPU.Runtime
         public static T HandleOperation<T>(
             Func<T> operation,
             Accelerator? accelerator = null,
-            string operationName = "Unknown")
-        {
-            return HandleOperation(operation, accelerator, operationName, CancellationToken.None);
-        }
+            string operationName = "Unknown") => HandleOperation(operation, accelerator, operationName, CancellationToken.None);
 
         /// <summary>
         /// Handles a GPU exception with automatic recovery if enabled.

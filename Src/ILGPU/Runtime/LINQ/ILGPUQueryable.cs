@@ -138,19 +138,13 @@ namespace ILGPU.Runtime.LINQ
         /// Returns an enumerator that iterates through the query results.
         /// </summary>
         /// <returns>An enumerator for the query results.</returns>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return Execute().GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => Execute().GetEnumerator();
 
         /// <summary>
         /// Returns an enumerator that iterates through the query results.
         /// </summary>
         /// <returns>An enumerator for the query results.</returns>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
         /// Executes the query and returns the results as an enumerable.
@@ -170,10 +164,7 @@ namespace ILGPU.Runtime.LINQ
         /// Executes the query and returns the results as an array.
         /// </summary>
         /// <returns>The query results as an array.</returns>
-        public T[] ToArray()
-        {
-            return Execute().ToArray();
-        }
+        public T[] ToArray() => Execute().ToArray();
 
         /// <summary>
         /// Executes the query and stores the results in the specified buffer.

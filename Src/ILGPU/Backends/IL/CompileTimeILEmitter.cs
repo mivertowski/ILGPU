@@ -191,40 +191,22 @@ namespace ILGPU.Backends.IL
         }
 
         /// <summary cref="IILEmitter.EmitAlloca(int)"/>
-        public void EmitAlloca(int size)
-        {
-            sourceBuilder.Append($"stackalloc byte[{size}]");
-        }
+        public void EmitAlloca(int size) => sourceBuilder.Append($"stackalloc byte[{size}]");
 
         /// <summary cref="IILEmitter.EmitConstant(string)"/>
-        public void EmitConstant(string constant)
-        {
-            sourceBuilder.Append($"\"{EscapeString(constant)}\"");
-        }
+        public void EmitConstant(string constant) => sourceBuilder.Append($"\"{EscapeString(constant)}\"");
 
         /// <summary cref="IILEmitter.EmitConstant(int)"/>
-        public void EmitConstant(int constant)
-        {
-            sourceBuilder.Append(constant.ToString());
-        }
+        public void EmitConstant(int constant) => sourceBuilder.Append(constant.ToString());
 
         /// <summary cref="IILEmitter.EmitConstant(long)"/>
-        public void EmitConstant(long constant)
-        {
-            sourceBuilder.Append($"{constant}L");
-        }
+        public void EmitConstant(long constant) => sourceBuilder.Append($"{constant}L");
 
         /// <summary cref="IILEmitter.EmitConstant(float)"/>
-        public void EmitConstant(float constant)
-        {
-            sourceBuilder.Append($"{constant}f");
-        }
+        public void EmitConstant(float constant) => sourceBuilder.Append($"{constant}f");
 
         /// <summary cref="IILEmitter.EmitConstant(double)"/>
-        public void EmitConstant(double constant)
-        {
-            sourceBuilder.Append($"{constant}d");
-        }
+        public void EmitConstant(double constant) => sourceBuilder.Append($"{constant}d");
 
         /// <summary cref="IILEmitter.Emit(OpCode)"/>
         public void Emit(OpCode opCode)
@@ -364,10 +346,7 @@ namespace ILGPU.Backends.IL
         }
 
         /// <summary cref="IILEmitter.EmitWriteLine"/>
-        public void EmitWriteLine(string message)
-        {
-            EmitLine($"Console.WriteLine(\"{EscapeString(message)}\");");
-        }
+        public void EmitWriteLine(string message) => EmitLine($"Console.WriteLine(\"{EscapeString(message)}\");");
 
         /// <summary cref="IILEmitter.Finish"/>
         public void Finish()
@@ -417,10 +396,7 @@ namespace ILGPU.Backends.IL
         /// <summary>
         /// Escapes a string for use in C# source code.
         /// </summary>
-        private static string EscapeString(string input)
-        {
-            return input.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
-        }
+        private static string EscapeString(string input) => input.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
 
         #endregion
 

@@ -193,9 +193,11 @@ namespace ILGPU.Tests
             public Nested First;
             public Nested Second;
 
-            public bool Equals(Parent other) =>
-                First.Equals(other.First) &&
+            public bool Equals(Parent other)
+            {
+                return First.Equals(other.First) &&
                 Second.Equals(other.Second);
+            }
         }
 
         [SuppressMessage(
@@ -207,9 +209,12 @@ namespace ILGPU.Tests
             public int Value1;
             public int Value2;
 
-            public bool Equals(Nested other) =>
-                Value1.Equals(other.Value1) &&
+            public bool Equals(Nested other)
+            {
+                return Value1.Equals(other.Value1) &&
                 Value2.Equals(other.Value2);
+            }
+
         }
 
         internal static void StructureGetNestedKernel(

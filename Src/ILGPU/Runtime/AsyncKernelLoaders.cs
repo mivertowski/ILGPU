@@ -142,10 +142,7 @@ namespace ILGPU.Runtime
             this Accelerator accelerator,
             MethodInfo method,
             KernelConfig config,
-            CancellationToken cancellationToken = default)
-        {
-            return accelerator.LoadKernelAsync(method, accelerator.DefaultStream, config, cancellationToken);
-        }
+            CancellationToken cancellationToken = default) => accelerator.LoadKernelAsync(method, accelerator.DefaultStream, config, cancellationToken);
 
         /// <summary>
         /// Loads and launches a kernel asynchronously using the default stream with one parameter.
@@ -162,10 +159,7 @@ namespace ILGPU.Runtime
             MethodInfo method,
             KernelConfig config,
             T1 arg1,
-            CancellationToken cancellationToken = default)
-        {
-            return accelerator.LoadKernelAsync(method, accelerator.DefaultStream, config, arg1, cancellationToken);
-        }
+            CancellationToken cancellationToken = default) => accelerator.LoadKernelAsync(method, accelerator.DefaultStream, config, arg1, cancellationToken);
 
         /// <summary>
         /// Loads and launches a kernel asynchronously using the default stream with two parameters.
@@ -185,10 +179,7 @@ namespace ILGPU.Runtime
             KernelConfig config,
             T1 arg1,
             T2 arg2,
-            CancellationToken cancellationToken = default)
-        {
-            return accelerator.LoadKernelAsync(method, accelerator.DefaultStream, config, arg1, arg2, cancellationToken);
-        }
+            CancellationToken cancellationToken = default) => accelerator.LoadKernelAsync(method, accelerator.DefaultStream, config, arg1, arg2, cancellationToken);
 
         #endregion
 
@@ -287,10 +278,7 @@ namespace ILGPU.Runtime
             MethodInfo method,
             TIndex extent,
             CancellationToken cancellationToken = default)
-            where TIndex : struct
-        {
-            return accelerator.LoadAutoGroupedKernelAsync(method, accelerator.DefaultStream, extent, cancellationToken);
-        }
+            where TIndex : struct => accelerator.LoadAutoGroupedKernelAsync(method, accelerator.DefaultStream, extent, cancellationToken);
 
         /// <summary>
         /// Loads and launches an auto-grouped kernel asynchronously using the default stream with one parameter.
@@ -309,10 +297,7 @@ namespace ILGPU.Runtime
             TIndex extent,
             T1 arg1,
             CancellationToken cancellationToken = default)
-            where TIndex : struct
-        {
-            return accelerator.LoadAutoGroupedKernelAsync(method, accelerator.DefaultStream, extent, arg1, cancellationToken);
-        }
+            where TIndex : struct => accelerator.LoadAutoGroupedKernelAsync(method, accelerator.DefaultStream, extent, arg1, cancellationToken);
 
         #endregion
 

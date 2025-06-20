@@ -42,14 +42,21 @@ namespace ILGPU.Algorithms.Tests
             public int Distance { get; }
             public int LaneIndex { get; }
 
-            public LaneEntry Apply(LaneEntry first, LaneEntry second) =>
-                Utilities.Select(first.Distance < second.Distance, first, second);
+            public LaneEntry Apply(LaneEntry first, LaneEntry second)
+            {
+                return Utilities.Select(first.Distance < second.Distance, first, second);
+            }
 
-            public LaneEntry Operation(LaneEntry current, LaneEntry value) =>
-                Apply(current, value);
+            public LaneEntry Operation(LaneEntry current, LaneEntry value)
+            {
+                return Apply(current, value);
+            }
 
-            public void AtomicApply(ref LaneEntry target, LaneEntry value) =>
+            public void AtomicApply(ref LaneEntry target, LaneEntry value)
+            {
                 Atomic.MakeAtomic(ref target, value, this, this);
+            }
+
 
             public LaneEntry CompareExchange(
                 ref LaneEntry target,
@@ -63,10 +70,16 @@ namespace ILGPU.Algorithms.Tests
                 return Unsafe.As<long, LaneEntry>(ref result);
             }
 
-            public bool IsSame(LaneEntry left, LaneEntry right) =>
-                left.Distance == right.Distance & left.LaneIndex == right.LaneIndex;
+            public bool IsSame(LaneEntry left, LaneEntry right)
+            {
+                return left.Distance == right.Distance & left.LaneIndex == right.LaneIndex;
+            }
 
-            public override string ToString() => $"{LaneIndex}: {Distance}d";
+            public override string ToString()
+            {
+                return $"{LaneIndex}: {Distance}d";
+            }
+
         }
 
         public static void FindKernel(

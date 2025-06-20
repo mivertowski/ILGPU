@@ -93,14 +93,11 @@ namespace ILGPU.Runtime.DependencyInjection
         public static IServiceCollection AddILGPU(
             this IServiceCollection services,
             AcceleratorType acceleratorType,
-            Action<ILGPUOptions>? configure = null)
-        {
-            return services.AddILGPU(options =>
-            {
-                options.PreferredAcceleratorType = acceleratorType;
-                configure?.Invoke(options);
-            });
-        }
+            Action<ILGPUOptions>? configure = null) => services.AddILGPU(options =>
+                                                                {
+                                                                    options.PreferredAcceleratorType = acceleratorType;
+                                                                    configure?.Invoke(options);
+                                                                });
 
         /// <summary>
         /// Adds memory pooling services to the service collection.
@@ -141,16 +138,13 @@ namespace ILGPU.Runtime.DependencyInjection
         /// <returns>The service collection for chaining.</returns>
         public static IServiceCollection AddMemoryPooling(
             this IServiceCollection services,
-            MemoryPoolPreset preset)
-        {
-            return preset switch
+            MemoryPoolPreset preset) => preset switch
             {
                 MemoryPoolPreset.HighPerformance => services.AddMemoryPooling(_ => MemoryPoolConfiguration.CreateHighPerformance()),
                 MemoryPoolPreset.MemoryEfficient => services.AddMemoryPooling(_ => MemoryPoolConfiguration.CreateMemoryEfficient()),
                 MemoryPoolPreset.Development => services.AddMemoryPooling(_ => MemoryPoolConfiguration.CreateDevelopment()),
                 _ => services.AddMemoryPooling()
             };
-        }
 
         /// <summary>
         /// Adds performance profiling services to the service collection.

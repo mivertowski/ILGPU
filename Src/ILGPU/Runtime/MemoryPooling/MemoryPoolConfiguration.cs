@@ -130,60 +130,51 @@ namespace ILGPU.Runtime.MemoryPooling
         /// Creates a configuration optimized for high-performance scenarios.
         /// </summary>
         /// <returns>A high-performance memory pool configuration.</returns>
-        public static MemoryPoolConfiguration CreateHighPerformance()
+        public static MemoryPoolConfiguration CreateHighPerformance() => new MemoryPoolConfiguration
         {
-            return new MemoryPoolConfiguration
-            {
-                MaxPoolSizeBytes = Environment.Is64BitProcess ? 2L * 1024 * 1024 * 1024 : 512L * 1024 * 1024,
-                MaxBufferSizeBytes = 200L * 1024 * 1024,
-                RetentionPolicy = PoolRetentionPolicy.KeepAll,
-                BufferTrimInterval = TimeSpan.FromMinutes(10),
-                MinBuffersToKeep = 4,
-                MaxBuffersPerSize = 16,
-                AllocationAlignment = 512,
-                PrewarmCommonSizes = true,
-                SizeBucketFactor = 1.25, // More granular size buckets
-            };
-        }
+            MaxPoolSizeBytes = Environment.Is64BitProcess ? 2L * 1024 * 1024 * 1024 : 512L * 1024 * 1024,
+            MaxBufferSizeBytes = 200L * 1024 * 1024,
+            RetentionPolicy = PoolRetentionPolicy.KeepAll,
+            BufferTrimInterval = TimeSpan.FromMinutes(10),
+            MinBuffersToKeep = 4,
+            MaxBuffersPerSize = 16,
+            AllocationAlignment = 512,
+            PrewarmCommonSizes = true,
+            SizeBucketFactor = 1.25, // More granular size buckets
+        };
 
         /// <summary>
         /// Creates a configuration optimized for low memory usage.
         /// </summary>
         /// <returns>A memory-efficient pool configuration.</returns>
-        public static MemoryPoolConfiguration CreateMemoryEfficient()
+        public static MemoryPoolConfiguration CreateMemoryEfficient() => new MemoryPoolConfiguration
         {
-            return new MemoryPoolConfiguration
-            {
-                MaxPoolSizeBytes = Environment.Is64BitProcess ? 256L * 1024 * 1024 : 64L * 1024 * 1024,
-                MaxBufferSizeBytes = 32L * 1024 * 1024,
-                RetentionPolicy = PoolRetentionPolicy.Aggressive,
-                BufferTrimInterval = TimeSpan.FromMinutes(2),
-                MinBuffersToKeep = 1,
-                MaxBuffersPerSize = 3,
-                AllocationAlignment = 128,
-                PrewarmCommonSizes = false,
-                SizeBucketFactor = 2.0, // Fewer size buckets
-            };
-        }
+            MaxPoolSizeBytes = Environment.Is64BitProcess ? 256L * 1024 * 1024 : 64L * 1024 * 1024,
+            MaxBufferSizeBytes = 32L * 1024 * 1024,
+            RetentionPolicy = PoolRetentionPolicy.Aggressive,
+            BufferTrimInterval = TimeSpan.FromMinutes(2),
+            MinBuffersToKeep = 1,
+            MaxBuffersPerSize = 3,
+            AllocationAlignment = 128,
+            PrewarmCommonSizes = false,
+            SizeBucketFactor = 2.0, // Fewer size buckets
+        };
 
         /// <summary>
         /// Creates a configuration optimized for development and debugging.
         /// </summary>
         /// <returns>A development-friendly pool configuration.</returns>
-        public static MemoryPoolConfiguration CreateDevelopment()
+        public static MemoryPoolConfiguration CreateDevelopment() => new MemoryPoolConfiguration
         {
-            return new MemoryPoolConfiguration
-            {
-                MaxPoolSizeBytes = 128L * 1024 * 1024,
-                MaxBufferSizeBytes = 16L * 1024 * 1024,
-                RetentionPolicy = PoolRetentionPolicy.Adaptive,
-                BufferTrimInterval = TimeSpan.FromMinutes(1),
-                MinBuffersToKeep = 1,
-                MaxBuffersPerSize = 4,
-                AllocationAlignment = 64,
-                EnableStatistics = true,
-                PrewarmCommonSizes = false,
-            };
-        }
+            MaxPoolSizeBytes = 128L * 1024 * 1024,
+            MaxBufferSizeBytes = 16L * 1024 * 1024,
+            RetentionPolicy = PoolRetentionPolicy.Adaptive,
+            BufferTrimInterval = TimeSpan.FromMinutes(1),
+            MinBuffersToKeep = 1,
+            MaxBuffersPerSize = 4,
+            AllocationAlignment = 64,
+            EnableStatistics = true,
+            PrewarmCommonSizes = false,
+        };
     }
 }

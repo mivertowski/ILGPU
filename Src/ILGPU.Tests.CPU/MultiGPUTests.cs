@@ -67,7 +67,7 @@ namespace ILGPU.Tests.CPU
             public override async Task ExecuteAsync(GPUInfo gpu, CancellationToken cancellationToken)
             {
                 // Simulate work
-                await Task.Delay(processingTime, cancellationToken);
+                await Task.Delay(processingTime, cancellationToken).ConfigureAwait(false);
                 
                 // Simple computation to verify GPU usage
                 using var buffer = gpu.accelerator.Allocate1D<int>(100);
@@ -375,7 +375,7 @@ namespace ILGPU.Tests.CPU
                 inputData,
                 async (chunk, gpu, cancellationToken) =>
                 {
-                    await Task.Delay(10, cancellationToken); // Simulate processing
+                    await Task.Delay(10, cancellationToken).ConfigureAwait(false); // Simulate processing
                     return chunk.Select(x => x * 2).ToArray();
                 });
 
@@ -524,7 +524,7 @@ namespace ILGPU.Tests.CPU
 
             await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
             {
-                await orchestrator.ExecuteAsync(cts.Token);
+                await orchestrator.ExecuteAsync(cts.Token).ConfigureAwait(false);
             });
         }
 
@@ -570,7 +570,7 @@ namespace ILGPU.Tests.CPU
                 tasks[i] = Task.Run(async () =>
                 {
                     var workItem = new TestWorkItem($"concurrent_{taskId}", 50);
-                    await orchestrator.ExecuteSingleAsync(workItem);
+                    await orchestrator.ExecuteSingleAsync(workItem).ConfigureAwait(false);
                 });
             }
 

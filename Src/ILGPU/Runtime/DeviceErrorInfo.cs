@@ -344,11 +344,8 @@ namespace ILGPU.Runtime
         /// Returns a string representation of the memory information.
         /// </summary>
         /// <returns>A string representation.</returns>
-        public override string ToString()
-        {
-            return $"Memory: {AvailableMemory / (1024 * 1024)}MB/{TotalMemory / (1024 * 1024)}MB " +
+        public override string ToString() => $"Memory: {AvailableMemory / (1024 * 1024)}MB/{TotalMemory / (1024 * 1024)}MB " +
                    $"({MemoryUtilization:F1}% used), Max Allocation: {MaxAllocationSize / (1024 * 1024)}MB";
-        }
 
         /// <summary>
         /// Gets the serialization data for this instance.
