@@ -75,6 +75,15 @@ namespace ILGPU.Runtime.Velocity
         #region Context
 
         /// <summary>
+        /// Gets all registered Velocity devices.
+        /// </summary>
+        /// <param name="context">The ILGPU context.</param>
+        /// <returns>All registered Velocity devices.</returns>
+        public static Context.DeviceCollection<VelocityDevice> GetVelocityDevices(
+            this Context context) =>
+            context.GetDevices<VelocityDevice>();
+
+        /// <summary>
         /// Gets a registered Velocity device.
         /// </summary>
         /// <param name="context">The ILGPU context.</param>

@@ -13,13 +13,20 @@ using ILGPU.Backends.EntryPoints;
 using ILGPU.Runtime.CPU;
 using ILGPU.Util;
 using System.Collections.Immutable;
+#if !NATIVE_AOT && !AOT_COMPATIBLE
 using System.Reflection.Emit;
+#endif
 
 namespace ILGPU.Backends.IL
 {
+#if !NATIVE_AOT && !AOT_COMPATIBLE
     /// <summary>
     /// The default IL backend that uses the original kernel method.
     /// </summary>
+    /// <remarks>
+    /// This backend is not available in AOT compilation modes as it requires
+    /// dynamic IL generation through System.Reflection.Emit.
+    /// </remarks>
     public class DefaultILBackend : ILBackend
     {
         #region Instance
@@ -67,4 +74,5 @@ namespace ILGPU.Backends.IL
 
         #endregion
     }
+#endif
 }

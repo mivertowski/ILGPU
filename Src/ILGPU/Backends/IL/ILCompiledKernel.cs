@@ -53,8 +53,8 @@ namespace ILGPU.Backends.IL
             : base(context, entryPoint, null)
         {
             KernelMethod = kernelMethod;
-            ExecutionHandler = (CPUKernelExecutionHandler)KernelMethod.CreateDelegate(
-                typeof(CPUKernelExecutionHandler));
+            ExecutionHandler = Runtime.AOTDelegateResolver.CreateDelegate<CPUKernelExecutionHandler>(
+                KernelMethod);
             TaskType = taskType;
             TaskConstructor = taskConstructor;
             TaskArgumentMapping = taskArgumentMapping;

@@ -193,9 +193,39 @@ namespace ILGPU.SourceGenerators.Generators
             sb.AppendLine($"            // This replaces the dynamic IL generation for {methodName}");
             sb.AppendLine();
             
-            // For now, generate a placeholder that demonstrates the structure
-            sb.AppendLine("            // TODO: Implement actual AOT kernel launch logic");
-            sb.AppendLine($"            throw new NotImplementedException(\"AOT kernel launcher for {methodName} not yet implemented\");");
+            // Generate actual kernel launch logic
+            sb.AppendLine("            // Validate accelerator stream");
+            sb.AppendLine("            if (stream == null)");
+            sb.AppendLine("                throw new ArgumentNullException(nameof(stream));");
+            sb.AppendLine();
+            
+            sb.AppendLine("            // Get kernel dimensions");
+            sb.AppendLine("            var kernelExtent = acceleratorStream.Accelerator.ComputeGridStrideLoopExtent(");
+            sb.AppendLine($"                extent, out var gridDim, out var groupDim);");
+            sb.AppendLine();
+            
+            sb.AppendLine("            // Launch kernel using accelerator-specific backend");
+            sb.AppendLine("            var backend = acceleratorStream.Accelerator.Backend;");
+            sb.AppendLine($"            var compiledKernel = backend.Compile(");
+            sb.AppendLine($"                new ILGPU.Backends.EntryPoints.EntryPoint(");
+            sb.AppendLine($"                    typeof({kernel.MethodSymbol.ContainingType.Name}).GetMethod(\"{methodName}\")!,");
+            sb.AppendLine($"                    new ILGPU.Backends.KernelSpecialization()),");
+            sb.AppendLine($"                new ILGPU.Backends.KernelSpecialization());");
+            sb.AppendLine();
+            
+            sb.AppendLine("            // Execute compiled kernel");
+            sb.AppendLine("            acceleratorStream.Launch(");
+            sb.AppendLine("                compiledKernel,");
+            sb.AppendLine("                gridDim,");
+            sb.AppendLine("                groupDim");
+            
+            // Add parameters to kernel launch
+            foreach (var param in kernel.ParameterAnalysis.Parameters)
+            {
+                sb.AppendLine($"                , {param.Symbol.Name}");
+            }
+            
+            sb.AppendLine("            );");
             
             sb.AppendLine("        }");
         }

@@ -79,7 +79,7 @@ namespace ILGPU.IR.Types
                 throw new ArgumentNullException(nameof(context));
 
             TargetPlatform = context.TargetPlatform;
-            RuntimeSystem = context.RuntimeSystem;
+            KernelSystem = context.KernelSystem;
             MathMode = context.Properties.MathMode;
 
             VoidType = new VoidType(this);
@@ -118,9 +118,22 @@ namespace ILGPU.IR.Types
         public TargetPlatform TargetPlatform { get; }
 
         /// <summary>
+        /// Returns the associated kernel system.
+        /// </summary>
+        public IKernelSystem KernelSystem { get; }
+
+        /// <summary>
         /// Returns the parent runtime system.
         /// </summary>
-        public RuntimeSystem RuntimeSystem { get; }
+        /// <remarks>
+        /// This property is only available when not using AOT compilation.
+        /// Use KernelSystem for AOT-compatible access.
+        /// </remarks>
+#if !NATIVE_AOT && !AOT_COMPATIBLE
+        public RuntimeSystem RuntimeSystem => 
+            KernelSystem is RuntimeSystemAdapter adapter ? adapter.RuntimeSystem : 
+            throw new NotSupportedException("RuntimeSystem is not available in AOT mode. Use KernelSystem instead.");
+#endif
 
         /// <summary>
         /// Returns the current math mode.

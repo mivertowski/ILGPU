@@ -148,10 +148,9 @@ namespace ILGPU.Runtime
                 loader,
                 entry,
                 specialization);
-            return (launcherMethod.CreateDelegate(
-                typeof(TDelegate),
-                cacheInstance) as TDelegate)
-                .AsNotNull();
+            return AOTDelegateResolver.CreateDelegate<TDelegate>(
+                launcherMethod,
+                cacheInstance);
         }
 
         /// <summary>
@@ -334,8 +333,9 @@ namespace ILGPU.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TDelegate CreateLauncherDelegate<TDelegate>()
             where TDelegate : Delegate =>
-            (Launcher.AsNotNull().CreateDelegate(typeof(TDelegate), this) as TDelegate)
-            .AsNotNull();
+            AOTDelegateResolver.CreateDelegate<TDelegate>(
+                Launcher.AsNotNull(),
+                this);
 
         /// <summary>
         /// Invokes the associated launcher via reflection.

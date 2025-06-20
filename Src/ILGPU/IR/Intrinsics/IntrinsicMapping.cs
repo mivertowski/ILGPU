@@ -314,9 +314,8 @@ namespace ILGPU.IR.Intrinsics
                 case IntrinsicImplementationMode.GenerateCode:
                     if (!TargetMethod.IsGenericMethod)
                     {
-                        CodeGenerator = (TargetMethod.CreateDelegate(typeof(TDelegate))
-                            as TDelegate)
-                            .AsNotNull();
+                        CodeGenerator = Runtime.AOTDelegateResolver.CreateDelegate<TDelegate>(
+                            TargetMethod);
                     }
                     else
                     {
@@ -397,8 +396,8 @@ namespace ILGPU.IR.Intrinsics
                 var key = new MappingKey(genericArguments);
                 if (!delegateMapping.AsNotNull().TryGetValue(key, out var codeGenerator))
                 {
-                    codeGenerator = resolvedMethod.CreateDelegate(typeof(TDelegate))
-                        .AsNotNullCast<TDelegate>();
+                    codeGenerator = Runtime.AOTDelegateResolver.CreateDelegate<TDelegate>(
+                        resolvedMethod);
                     delegateMapping.AsNotNull().Add(key, codeGenerator);
                 }
                 return codeGenerator;

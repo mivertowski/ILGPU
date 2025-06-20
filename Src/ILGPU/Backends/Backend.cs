@@ -502,9 +502,20 @@ namespace ILGPU.Backends
         public Context Context { get; }
 
         /// <summary>
+        /// Returns the current kernel system instance.
+        /// </summary>
+        protected IKernelSystem KernelSystem => Context.KernelSystem;
+
+        /// <summary>
         /// Returns the current runtime system instance.
         /// </summary>
+        /// <remarks>
+        /// This property is only available when not using AOT compilation.
+        /// Use KernelSystem for AOT-compatible access.
+        /// </remarks>
+#if !NATIVE_AOT && !AOT_COMPATIBLE
         protected RuntimeSystem RuntimeSystem => Context.RuntimeSystem;
+#endif
 
         /// <summary>
         /// Returns the supported capabilities.

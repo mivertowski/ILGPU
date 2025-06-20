@@ -15,14 +15,21 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+#if !NATIVE_AOT && !AOT_COMPATIBLE
 using System.Reflection.Emit;
+#endif
 using System.Threading;
 
 namespace ILGPU
 {
+#if !NATIVE_AOT && !AOT_COMPATIBLE
     /// <summary>
     /// Represents the dynamic ILGPU assembly runtime system.
     /// </summary>
+    /// <remarks>
+    /// This class is only available in JIT compilation mode and is not supported in AOT scenarios.
+    /// Use CompiledKernelSystem for AOT-compatible kernel management.
+    /// </remarks>
     public sealed class RuntimeSystem : DisposeBase, ICache
     {
         #region Constants
@@ -314,4 +321,5 @@ namespace ILGPU
 
         #endregion
     }
+#endif
 }

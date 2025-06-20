@@ -86,6 +86,26 @@ namespace ILGPU.Runtime
         /// </summary>
         CapabilityContext Capabilities { get; }
 
+        /// <summary>
+        /// Gets the current status of this device.
+        /// </summary>
+        DeviceStatus Status { get; }
+
+        /// <summary>
+        /// Gets enhanced memory information for this device.
+        /// </summary>
+        MemoryInfo Memory { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this device supports unified memory.
+        /// </summary>
+        bool SupportsUnifiedMemory { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this device supports memory pools.
+        /// </summary>
+        bool SupportsMemoryPools { get; }
+
         #endregion
 
         #region Methods
@@ -119,6 +139,34 @@ namespace ILGPU.Runtime
 
             // NB: Initialized later by derived classes.
             Capabilities = Utilities.InitNotNullable<CapabilityContext>();
+        }
+
+        /// <summary>
+        /// Initializes memory information for this device.
+        /// This should be called by derived classes after setting up device properties.
+        /// </summary>
+        protected virtual void InitializeMemoryInfo()
+        {
+            try
+            {
+                Memory = new MemoryInfo(
+                    totalMemory: MemorySize,
+                    availableMemory: MemorySize, // Assume all memory is available initially
+                    usedMemory: 0,
+                    maxAllocationSize: Math.Min(MemorySize, MaxConstantMemory > 0 ? Math.Max(MemorySize / 4, MaxConstantMemory) : MemorySize / 4),
+                    allocationGranularity: 256, // Common GPU memory alignment
+                    supportsVirtualMemory: false, // Default to false, can be overridden
+                    supportsMemoryMapping: false, // Default to false, can be overridden
+                    supportsZeroCopy: AcceleratorType == AcceleratorType.CPU, // CPU supports zero-copy by default
+                    cacheLineSize: AcceleratorType == AcceleratorType.CPU ? 64 : 128, // Different cache line sizes
+                    memoryBandwidth: 0 // Unknown bandwidth, can be set by specific implementations
+                );
+            }
+            catch
+            {
+                // If memory info creation fails, use unknown
+                Memory = MemoryInfo.Unknown;
+            }
         }
 
         #endregion
@@ -199,6 +247,45 @@ namespace ILGPU.Runtime
         /// Returns the supported capabilities of this device.
         /// </summary>
         public CapabilityContext Capabilities { get; protected set; }
+
+        /// <summary>
+        /// Gets the current status of this device.
+        /// </summary>
+        /// <remarks>
+        /// This property provides real-time device state information enabling
+        /// applications to make informed decisions about device usage and
+        /// handle device state changes appropriately.
+        /// </remarks>
+        public virtual DeviceStatus Status { get; protected set; } = DeviceStatus.Available;
+
+        /// <summary>
+        /// Gets enhanced memory information for this device.
+        /// </summary>
+        /// <remarks>
+        /// This property provides comprehensive memory statistics and capabilities
+        /// information, enabling efficient memory management and allocation strategies.
+        /// </remarks>
+        public virtual MemoryInfo Memory { get; protected set; } = MemoryInfo.Unknown;
+
+        /// <summary>
+        /// Gets a value indicating whether this device supports unified memory.
+        /// </summary>
+        /// <remarks>
+        /// Unified memory allows the GPU and CPU to share a single memory space,
+        /// simplifying memory management and enabling automatic data migration
+        /// between host and device memory.
+        /// </remarks>
+        public virtual bool SupportsUnifiedMemory { get; protected set; } = false;
+
+        /// <summary>
+        /// Gets a value indicating whether this device supports memory pools.
+        /// </summary>
+        /// <remarks>
+        /// Memory pools provide efficient buffer reuse and reduced allocation
+        /// overhead through sophisticated caching and recycling strategies,
+        /// significantly improving performance for frequent allocations.
+        /// </remarks>
+        public virtual bool SupportsMemoryPools { get; protected set; } = false;
 
         #endregion
 

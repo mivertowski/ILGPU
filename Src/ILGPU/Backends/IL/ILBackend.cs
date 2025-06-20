@@ -20,14 +20,21 @@ using ILGPU.Util;
 using System;
 using System.Collections.Immutable;
 using System.Reflection;
+#if !NATIVE_AOT && !AOT_COMPATIBLE
 using System.Reflection.Emit;
+#endif
 using System.Runtime.CompilerServices;
 
 namespace ILGPU.Backends.IL
 {
+#if !NATIVE_AOT && !AOT_COMPATIBLE
     /// <summary>
     /// The basic MSIL backend for the CPU runtime.
     /// </summary>
+    /// <remarks>
+    /// This backend is not available in AOT compilation modes as it requires
+    /// dynamic IL generation through System.Reflection.Emit.
+    /// </remarks>
     public abstract class ILBackend : Backend<ILBackend.Handler>
     {
         #region Nested Types
@@ -415,4 +422,5 @@ namespace ILGPU.Backends.IL
 
         #endregion
     }
+#endif
 }

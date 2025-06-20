@@ -21,13 +21,20 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
+#if !NATIVE_AOT && !AOT_COMPATIBLE
 using System.Reflection.Emit;
+#endif
 
 namespace ILGPU.Backends.Velocity
 {
+#if !NATIVE_AOT && !AOT_COMPATIBLE
     /// <summary>
     /// A kernel module generator for managed velocity kernel types.
     /// </summary>
+    /// <remarks>
+    /// This module is not available in AOT compilation modes as it requires
+    /// dynamic IL generation through System.Reflection.Emit.
+    /// </remarks>
     sealed class VelocityGenerationModule : DisposeBase
     {
         #region Static
@@ -478,4 +485,5 @@ namespace ILGPU.Backends.Velocity
 
         #endregion
     }
+#endif
 }

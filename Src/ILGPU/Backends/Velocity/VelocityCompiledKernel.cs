@@ -95,7 +95,7 @@ namespace ILGPU.Backends.Velocity
         /// </summary>
         /// <returns>A kernel entry point delegate.</returns>
         internal VelocityEntryPointHandler CreateKernelEntryPoint() =>
-            KernelMethod.CreateDelegate<VelocityEntryPointHandler>();
+            Runtime.AOTDelegateResolver.CreateDelegate<VelocityEntryPointHandler>(KernelMethod);
 
         #endregion
     }

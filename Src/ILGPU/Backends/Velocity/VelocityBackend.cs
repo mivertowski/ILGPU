@@ -23,10 +23,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ILGPU.Backends.Velocity
 {
+#if !NATIVE_AOT && !AOT_COMPATIBLE
     /// <summary>
     /// Represents an automatic vectorization backend to be used with Velocity.
     /// </summary>
     /// <typeparam name="TILEmitter">The IL emitter type.</typeparam>
+    /// <remarks>
+    /// This backend is not available in AOT compilation modes as it requires
+    /// dynamic IL generation through System.Reflection.Emit.
+    /// </remarks>
     class VelocityBackend<TILEmitter> :
         CodeGeneratorBackend<
         VelocityBackend<TILEmitter>.Handler,
@@ -141,7 +146,7 @@ namespace ILGPU.Backends.Velocity
         {
             // Create a new generation module
             var module = new VelocityGenerationModule(
-                Context.RuntimeSystem,
+                ((RuntimeSystemAdapter)Context.KernelSystem).RuntimeSystem,
                 Specializer,
                 TypeGenerator,
                 backendContext,
@@ -188,4 +193,5 @@ namespace ILGPU.Backends.Velocity
                 module.SharedAllocationSize);
         }
     }
+#endif
 }

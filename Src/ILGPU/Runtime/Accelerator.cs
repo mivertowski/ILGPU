@@ -765,6 +765,26 @@ namespace ILGPU.Runtime
         public CapabilityContext Capabilities => Device.Capabilities;
 
         /// <summary>
+        /// Gets the current status of this accelerator's device.
+        /// </summary>
+        public DeviceStatus Status => Device.Status;
+
+        /// <summary>
+        /// Gets enhanced memory information for this accelerator's device.
+        /// </summary>
+        public MemoryInfo Memory => Device.Memory;
+
+        /// <summary>
+        /// Gets a value indicating whether this accelerator supports unified memory.
+        /// </summary>
+        public bool SupportsUnifiedMemory => Device.SupportsUnifiedMemory;
+
+        /// <summary>
+        /// Gets a value indicating whether this accelerator supports memory pools.
+        /// </summary>
+        public bool SupportsMemoryPools => Device.SupportsMemoryPools;
+
+        /// <summary>
         /// Prints device information to the given text writer.
         /// </summary>
         /// <param name="writer">The target text writer to write to.</param>

@@ -509,7 +509,23 @@ namespace ILGPU.Runtime
         /// <summary>
         /// Gets the element type of this buffer.
         /// </summary>
-        public override Type ElementType => typeof(byte); // Base implementation, override in typed buffers
+        public override Type ElementType
+        {
+            get
+            {
+                // Extract element type from the generic view type
+                var viewType = typeof(TView);
+                if (viewType.IsGenericType)
+                {
+                    var genericArgs = viewType.GetGenericArguments();
+                    if (genericArgs.Length > 0)
+                        return genericArgs[0]; // First generic argument is the element type
+                }
+                
+                // Fallback for non-generic views
+                return typeof(byte);
+            }
+        }
 
         /// <summary>
         /// Gets the number of dimensions of this buffer.

@@ -28,7 +28,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+#if !NATIVE_AOT && !AOT_COMPATIBLE
 using System.Reflection.Emit;
+#endif
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +53,12 @@ namespace ILGPU
         /// <summary>
         /// The name of the dynamic runtime assembly.
         /// </summary>
-        public const string RuntimeAssemblyName = RuntimeSystem.AssemblyName;
+        public const string RuntimeAssemblyName = 
+#if NATIVE_AOT || AOT_COMPATIBLE
+            CompiledKernelSystem.GeneratedKernelNamespace;
+#else
+            RuntimeSystem.AssemblyName;
+#endif
 
         /// <summary>
         /// Represents the general ILGPU assembly name.
@@ -168,7 +175,7 @@ namespace ILGPU
         /// Represents an aggressive inlining attribute builder.
         /// </summary>
         /// <remarks>Note that this attribute will not enforce inlining.</remarks>
-        internal static CustomAttributeBuilder InliningAttributeBuilder { get; }
+        internal static CustomAttributeBuilder? InliningAttributeBuilder { get; }
 
         /// <summary>
         /// Initializes all static context attributes.
@@ -183,11 +190,20 @@ namespace ILGPU
                 offset = versionString.IndexOf('.', offset + 1);
             Version = versionString.Substring(0, offset);
 
-            InliningAttributeBuilder = new CustomAttributeBuilder(
-                typeof(MethodImplAttribute).GetConstructor(
-                    new Type[] { typeof(MethodImplOptions) })
-                    .ThrowIfNull(),
-                new object[] { MethodImplOptions.AggressiveInlining });
+            // Only create the inlining attribute builder if reflection emit is supported
+            try
+            {
+                InliningAttributeBuilder = new CustomAttributeBuilder(
+                    typeof(MethodImplAttribute).GetConstructor(
+                        new Type[] { typeof(MethodImplOptions) })
+                        .ThrowIfNull(),
+                    new object[] { MethodImplOptions.AggressiveInlining });
+            }
+            catch (PlatformNotSupportedException)
+            {
+                // In AOT mode, dynamic code generation is not supported
+                InliningAttributeBuilder = null;
+            }
         }
 
         #endregion
@@ -229,7 +245,7 @@ namespace ILGPU
         {
             InstanceId = InstanceId.CreateNew();
             TargetPlatform = Backend.RuntimePlatform;
-            RuntimeSystem = new RuntimeSystem();
+            KernelSystem = KernelSystemFactory.Create();
             Properties = builder.InstantiateProperties();
 
             // Initialize verifier
@@ -253,7 +269,17 @@ namespace ILGPU
                 : new ILFrontend(this, frontendDebugInformationManager, 1);
 
             // Create default IL backend
-            DefautltILBackend = new DefaultILBackend(this);
+#if !NATIVE_AOT && !AOT_COMPATIBLE
+            // Runtime detection of AOT mode - only create IL backend if dynamic code generation is supported
+            if (KernelSystem.SupportsDynamicGeneration)
+            {
+                DefautltILBackend = new DefaultILBackend(this);
+            }
+            else
+            {
+                DefautltILBackend = null;
+            }
+#endif
 
             // Initialize default transformer
             ContextTransformer = Optimizer.CreateTransformer(
@@ -319,9 +345,22 @@ namespace ILGPU
         public TargetPlatform TargetPlatform { get; }
 
         /// <summary>
+        /// Returns the associated kernel system (runtime or compiled).
+        /// </summary>
+        public IKernelSystem KernelSystem { get; }
+
+        /// <summary>
         /// Returns the associated runtime system class.
         /// </summary>
-        public RuntimeSystem RuntimeSystem { get; }
+        /// <remarks>
+        /// This property is only available when not using AOT compilation.
+        /// Use KernelSystem for AOT-compatible access.
+        /// </remarks>
+#if !NATIVE_AOT && !AOT_COMPATIBLE
+        public RuntimeSystem RuntimeSystem => 
+            KernelSystem is RuntimeSystemAdapter adapter ? adapter.RuntimeSystem : 
+            throw new NotSupportedException("RuntimeSystem is not available in AOT mode. Use KernelSystem instead.");
+#endif
 
         /// <summary>
         /// Returns true if this context uses assertion checks.
@@ -345,7 +384,12 @@ namespace ILGPU
         /// <summary>
         /// Returns the associated default IL backend.
         /// </summary>
-        internal ILBackend DefautltILBackend { get; }
+        /// <remarks>
+        /// This backend is only available when not using AOT compilation and dynamic code generation is supported.
+        /// </remarks>
+#if !NATIVE_AOT && !AOT_COMPATIBLE
+        internal ILBackend? DefautltILBackend { get; }
+#endif
 
         /// <summary>
         /// Returns the internal verifier instance.
@@ -522,8 +566,10 @@ namespace ILGPU
             IRContext.ClearCache(mode);
             TypeContext.ClearCache(mode);
             DebugInformationManager.ClearCache(mode);
-            DefautltILBackend.ClearCache(mode);
-            RuntimeSystem.ClearCache(mode);
+#if !NATIVE_AOT && !AOT_COMPATIBLE
+            DefautltILBackend?.ClearCache(mode);
+#endif
+            KernelSystem.ClearCache(mode);
 
             base.ClearCache(mode);
         }
@@ -560,7 +606,9 @@ namespace ILGPU
                 IRContext.Dispose();
 
                 ILFrontend.Dispose();
-                DefautltILBackend.Dispose();
+#if !NATIVE_AOT && !AOT_COMPATIBLE
+                DefautltILBackend?.Dispose();
+#endif
 
                 DebugInformationManager.Dispose();
                 TypeContext.Dispose();

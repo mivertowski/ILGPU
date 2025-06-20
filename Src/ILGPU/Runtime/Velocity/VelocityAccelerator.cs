@@ -19,7 +19,9 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+#if !NATIVE_AOT && !AOT_COMPATIBLE
 using System.Reflection.Emit;
+#endif
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +30,14 @@ using System.Threading.Tasks;
 
 namespace ILGPU.Runtime.Velocity
 {
+#if !NATIVE_AOT && !AOT_COMPATIBLE
     /// <summary>
     /// A SIMD-enabled CPU-based accelerator.
     /// </summary>
+    /// <remarks>
+    /// This accelerator is not available in AOT compilation modes as it requires
+    /// dynamic IL generation through System.Reflection.Emit.
+    /// </remarks>
     public sealed class VelocityAccelerator : Accelerator
     {
         #region Static
@@ -579,6 +586,7 @@ namespace ILGPU.Runtime.Velocity
         #endregion
 
     }
+#endif
 }
 
 #pragma warning restore CA1508

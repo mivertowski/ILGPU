@@ -42,7 +42,7 @@ namespace ILGPU.Runtime
             if (cancellationToken.CanBeCanceled)
             {
                 cancellationRegistration = cancellationToken.Register(() => 
-                    completionSource.TrySetCanceled(cancellationToken));
+                    completionSource.TrySetCanceled(cancellationToken), useSynchronizationContext: false);
             }
 
             // Start the completion monitoring on a background thread
@@ -53,10 +53,13 @@ namespace ILGPU.Runtime
                     await stream.SynchronizeAsync().ConfigureAwait(false);
                     completionSource.TrySetResult(null);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
+                    // We need to catch all exceptions to properly forward them to the TaskCompletionSource
                     completionSource.TrySetException(ex);
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
             }, CancellationToken.None);
         }
 

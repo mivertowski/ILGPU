@@ -1,0 +1,25 @@
+&lt;linker&gt;
+  &lt;assembly fullname="ILGPU" preserve="all" /&gt;
+  &lt;assembly fullname="ILGPU.Tests.AOT" preserve="all" /&gt;
+  
+  &lt;!-- Preserve ILGPU kernel entry points --&gt;
+  &lt;type fullname="ILGPU.Runtime.KernelLoading" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Runtime.KernelLauncherBuilder" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Backends.EntryPoints.EntryPoint" preserve="all" /&gt;
+  
+  &lt;!-- Preserve GPU backends --&gt;
+  &lt;type fullname="ILGPU.Runtime.CPU.CPUAccelerator" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Runtime.Cuda.CudaAccelerator" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Runtime.OpenCL.CLAccelerator" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Runtime.Velocity.VelocityAccelerator" preserve="all" /&gt;
+  
+  &lt;!-- Preserve intrinsic methods --&gt;
+  &lt;type fullname="ILGPU.IntrinsicMath" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Atomic" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Group" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Grid" preserve="all" /&gt;
+  &lt;type fullname="ILGPU.Warp" preserve="all" /&gt;
+  
+  &lt;!-- Preserve source generator types --&gt;
+  &lt;type fullname="ILGPU.SourceGenerators.*" preserve="all" /&gt;
+&lt;/linker&gt;
