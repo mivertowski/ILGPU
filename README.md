@@ -64,7 +64,8 @@ ILGPU now provides a **single, unified API** that automatically optimizes across
 ### Installation
 ```bash
 # Install ILGPU with universal acceleration
-dotnet add package ILGPU --version 2.0.0-preview
+# dotnet add package ILGPU --version tbd
+# work in progress
 ```
 
 ### Basic Usage
