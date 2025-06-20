@@ -4,9 +4,9 @@
 
 This document outlines a comprehensive plan to modernize ILGPU for .NET 9 compliance and native AOT compatibility. The migration represents a **major architectural transformation** requiring fundamental changes to the code generation pipeline, native library integration, and reflection-based patterns.
 
-**Timeline**: 12-18 months  
+**Timeline**: 24-36 months (expanded to include cross-platform AI acceleration)
 **Risk Level**: High (Core architecture changes)  
-**Effort**: 3-5 senior developers  
+**Effort**: 5-8 senior developers (including platform specialists)  
 
 ## Current State Analysis
 
@@ -767,16 +767,269 @@ public interface IGpuDebugger
 - **Feature Parity**: 100% feature coverage in AOT mode
 - **Platform Support**: All current platforms (Windows, Linux, macOS)
 
+## Updated Success Metrics (Combined Plan)
+
+### Performance Targets (Expanded)
+- **Startup Time**: 10x improvement (AOT compilation eliminates JIT overhead)
+- **Memory Usage**: 30% reduction (eliminate reflection metadata)
+- **Kernel Launch**: 5% improvement (optimized code paths)
+- **Tensor Operations**: 10-20x improvement over general GPU compute for supported workloads
+- **Cross-Platform Overhead**: <5% for universal kernels vs. native implementations
+- **Neural Engine Operations**: 15-20x speedup for supported ML operations on Apple Silicon
+- **Intel AMX Operations**: 8-10x speedup for INT8/BF16 operations
+
+### Platform Coverage Targets
+- **Windows**: CUDA, OpenCL, Intel AMX, CPU SIMD (AVX/SSE)
+- **Linux**: CUDA, OpenCL, ROCm, Intel AMX, CPU SIMD (AVX/SSE)
+- **macOS**: Metal, Apple Neural Engine, Apple AMX, CPU SIMD (NEON)
+- **iOS/iPadOS**: Metal, Apple Neural Engine, Apple AMX, CPU SIMD (NEON)
+- **Android**: OpenCL, Vulkan Compute, CPU SIMD (NEON)
+
+### Integration Targets
+- **API Compatibility**: 95% source-level compatibility maintained
+- **Feature Parity**: 100% feature coverage in AOT mode
+- **ML.NET Integration**: 100% compatibility with standard ML.NET pipelines
+- **ONNX Runtime**: Drop-in replacement for existing execution providers
+- **Platform Support**: Complete coverage of major compute hardware
+
+## Master Implementation Timeline
+
+### **Phase 1**: .NET 9 Compliance (2-3 months) ✅ **COMPLETE**
+### **Phase 2**: AOT Foundation (4-6 months) ✅ **COMPLETE**
+### **Phase 3**: Native Library Modernization (3-4 months) ✅ **COMPLETE**
+### **Phase 4**: Complete AOT Transformation (6-8 months) ✅ **COMPLETE**
+
+### **Phase 5**: Advanced Performance & Optimization (3-4 months)
+- Built-in memory pooling with adaptive management
+- Comprehensive performance profiling and monitoring
+- Unified memory support for seamless CPU/GPU data flow
+- LINQ-style GPU operations for productivity
+- Advanced multi-GPU orchestration capabilities
+- Kernel caching system with version management
+
+### **Phase 6**: Tensor Core Integration & .NET SIMD Unification (6-8 months)
+- NVIDIA tensor core foundation with complete architecture support
+- .NET SIMD unification for seamless CPU/GPU interop
+- Heterogeneous computing pipeline for optimal workload distribution
+- Memory layout optimization with zero-copy operations
+- ML framework integration (ML.NET, ONNX Runtime)
+- Real-time inference optimization for production AI applications
+
+### **Phase 7**: Cross-Platform AI Acceleration (6-9 months)
+- **Apple Silicon Integration**: Metal backend, Neural Engine access, Accelerate framework
+- **Intel AI Accelerators**: AMX integration, OneAPI backend, NPU support
+- **Performance Primitives**: Unified interface for vendor libraries (IPP, NPP, ROCm, Accelerate)
+- **Intelligent Orchestration**: Automatic workload distribution across heterogeneous hardware
+
+### **Phase 8**: Universal Compute Platform (6-8 months)
+- **Unified Programming Model**: Single API across all platforms and hardware
+- **Universal Memory Management**: Zero-copy operations across all supported platforms
+- **Performance-Aware Scheduling**: Intelligent routing to optimal compute resources
+- **Complete ML Framework Integration**: Production-ready ecosystem integration
+
 ## Conclusion
 
-This modernization plan represents a fundamental transformation of ILGPU from a reflection-heavy JIT compiler to a modern, AOT-compatible GPU computing framework. While the effort is substantial, the benefits include:
+This expanded modernization plan transforms ILGPU from a reflection-heavy JIT compiler into a **universal compute acceleration platform** for .NET. The comprehensive approach addresses:
 
-- **Better Performance**: Eliminated JIT overhead and optimized code paths
-- **Smaller Deployments**: Trimmed, self-contained applications
-- **Modern Architecture**: Leveraging latest .NET and GPU computing advances
-- **Enhanced CUDA Integration**: Direct access to latest CUDA features
+### **Technical Transformation**
+- **AOT Compatibility**: Complete elimination of reflection dependencies
+- **Modern .NET Integration**: Full .NET 9+ feature adoption with latest language constructs
+- **Performance Optimization**: Multi-layered optimization from kernel compilation to hardware selection
+- **Cross-Platform Support**: Universal API working across all major compute platforms
 
-The phased approach ensures continuous functionality while systematically addressing AOT compatibility challenges. Success requires dedicated team effort and comprehensive testing throughout the migration process.
+### **Platform Coverage**
+- **NVIDIA**: CUDA, Tensor Cores, NPP performance primitives
+- **AMD**: ROCm, RDNA compute, performance libraries
+- **Intel**: Xe GPU, AMX matrix extensions, oneAPI ecosystem, IPP libraries
+- **Apple**: Metal, Neural Engine, AMX, Accelerate framework
+- **ARM**: NEON SIMD, Mali GPU, vendor-specific optimizations
+
+### **Strategic Value**
+- **Developer Productivity**: Single API for all compute hardware with automatic optimization
+- **Performance**: Best-in-class acceleration leveraging specialized hardware capabilities
+- **Ecosystem Integration**: Native support for ML.NET, ONNX Runtime, and .NET AI workloads
+- **Future-Proof**: Extensible architecture ready for emerging compute technologies
+
+### **Business Impact**
+- **Market Leadership**: Premier GPU computing framework for .NET ecosystem
+- **Competitive Advantage**: Universal hardware support unmatched by existing solutions
+- **Developer Adoption**: Simplified development model with maximum performance
+- **Enterprise Ready**: Production-grade reliability with comprehensive tooling
+
+The phased approach ensures continuous functionality while systematically delivering transformative capabilities. Upon completion, ILGPU will be the definitive compute acceleration platform for .NET, providing developers with unprecedented access to modern hardware capabilities through a unified, intelligent, and highly optimized API.
+
+## Phase 5: Advanced Performance & Optimization (3-4 months)
+
+### 5.1 **🟡 HIGH: Built-in Memory Pooling** (From Enhancement Plan)
+**Problem Addressed**: Manual memory pooling is error-prone and inefficient.
+
+**Implementation:**
+```csharp
+public interface IMemoryPool<T> : IDisposable where T : unmanaged
+{
+    IMemoryBuffer<T> Rent(long minLength);
+    void Return(IMemoryBuffer<T> buffer, bool clearBuffer = false);
+    void Trim();
+    MemoryPoolStatistics GetStatistics();
+    Task<IMemoryBuffer<T>> RentAsync(long minLength, CancellationToken ct = default);
+}
+
+public class MemoryPoolConfiguration
+{
+    public long MaxPoolSizeBytes { get; set; } = 1024 * 1024 * 1024; // 1GB
+    public long MaxBufferSizeBytes { get; set; } = 100 * 1024 * 1024; // 100MB
+    public PoolRetentionPolicy RetentionPolicy { get; set; } = PoolRetentionPolicy.Adaptive;
+    public TimeSpan BufferTrimInterval { get; set; } = TimeSpan.FromMinutes(5);
+}
+
+// Integration with DI
+services.AddILGPU(options =>
+{
+    options.EnableMemoryPooling = true;
+    options.MemoryPoolConfiguration = new MemoryPoolConfiguration
+    {
+        MaxPoolSizeBytes = Environment.Is64BitProcess ? 2L * 1024 * 1024 * 1024 : 512L * 1024 * 1024,
+        RetentionPolicy = PoolRetentionPolicy.Adaptive
+    };
+});
+```
+
+### 5.2 **🟢 MEDIUM: Built-in Performance Profiling** (From Enhancement Plan)
+**Problem Addressed**: No easy way to profile GPU code performance.
+
+**Implementation:**
+```csharp
+public interface IPerformanceProfiler : IDisposable
+{
+    Task<ProfilingSession> StartSessionAsync(string sessionName);
+    Task<KernelProfile> ProfileKernelAsync(IKernel kernel, Func<Task> executeKernel);
+    Task<MemoryProfile> GetMemoryProfileAsync();
+    Task<ProfilingReport> GenerateReportAsync(ProfilingSession session);
+    Task<HeatmapData> GenerateKernelHeatmapAsync(IKernel kernel);
+}
+
+public class KernelProfile
+{
+    public string KernelName { get; set; }
+    public double ExecutionTimeMs { get; set; }
+    public long MemoryUsedBytes { get; set; }
+    public double GpuUtilizationPercent { get; set; }
+    public int GridDimensions { get; set; }
+    public int BlockDimensions { get; set; }
+    public Dictionary<string, object> AdditionalMetrics { get; set; } = new();
+}
+```
+
+### 5.3 **🟢 MEDIUM: Unified Memory Support** (From Enhancement Plan)
+**Problem Addressed**: Manual memory transfer between CPU/GPU is tedious.
+
+**Implementation:**
+```csharp
+public interface IUnifiedMemoryBuffer<T> : IMemoryBuffer<T> where T : unmanaged
+{
+    MemoryLocation PreferredLocation { get; set; }
+    MemoryLocation CurrentLocation { get; }
+    Task MigrateAsync(MemoryLocation location, CancellationToken ct = default);
+    Task PrefetchAsync(int deviceId, long offset, long length, CancellationToken ct = default);
+    Task<MemoryUsageInfo> GetUsageInfoAsync();
+}
+
+public enum MemoryLocation
+{
+    Auto,
+    Host,
+    Device,
+    Unified
+}
+```
+
+### 5.4 **🟢 MEDIUM: LINQ-style GPU Operations** (From Enhancement Plan)
+**Problem Addressed**: Common operations require manual kernel writing.
+
+**Implementation:**
+```csharp
+public static class GpuLinq
+{
+    public static IGpuQueryable<T> AsGpu<T>(this IEnumerable<T> source, Accelerator accelerator) where T : unmanaged;
+    public static IGpuQueryable<T> AsGpu<T>(this IMemoryBuffer<T> source) where T : unmanaged;
+}
+
+public interface IGpuQueryable<T> : IQueryable<T> where T : unmanaged
+{
+    IGpuQueryable<TResult> Select<TResult>(Expression<Func<T, TResult>> selector) where TResult : unmanaged;
+    IGpuQueryable<T> Where(Expression<Func<T, bool>> predicate);
+    Task<TResult> AggregateAsync<TResult>(Expression<Func<T, T, TResult>> func) where TResult : unmanaged;
+    Task<T[]> ToArrayAsync(CancellationToken ct = default);
+    Task<IMemoryBuffer<T>> ToBufferAsync(CancellationToken ct = default);
+    
+    // Mathematical operations
+    IGpuQueryable<T> Add(IGpuQueryable<T> other);
+    IGpuQueryable<T> Multiply(T scalar);
+    Task<T> SumAsync(CancellationToken ct = default);
+    Task<T> MaxAsync(CancellationToken ct = default);
+    Task<T> MinAsync(CancellationToken ct = default);
+}
+```
+
+### 5.5 **🟢 MEDIUM: Kernel Caching and Versioning** (From Enhancement Plan)
+**Problem Addressed**: Kernel recompilation is expensive and version management is manual.
+
+**Implementation:**
+```csharp
+public interface IKernelCache : IDisposable
+{
+    Task<IKernel> GetOrCompileAsync(
+        string source,
+        string entryPoint,
+        KernelVersion version,
+        CompilationOptions options,
+        CancellationToken ct = default);
+    
+    void InvalidateKernel(string entryPoint, KernelVersion version);
+    Task<CacheStatistics> GetStatisticsAsync();
+    Task<bool> ContainsKernelAsync(string entryPoint, KernelVersion version);
+    Task ClearCacheAsync();
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class KernelVersionAttribute : Attribute
+{
+    public string Version { get; }
+    public KernelVersionAttribute(string version) => Version = version;
+}
+```
+
+### 5.6 **🔵 NICE-TO-HAVE: Multi-GPU Support** (From Enhancement Plan)
+**Problem Addressed**: Scaling across multiple GPUs is complex.
+
+**Implementation:**
+```csharp
+public interface IMultiGpuContext : IDisposable
+{
+    IReadOnlyList<Accelerator> Accelerators { get; }
+    
+    Task<IDistributedMemoryBuffer<T>> AllocateDistributedAsync<T>(
+        long length, 
+        DistributionStrategy strategy,
+        CancellationToken ct = default) where T : unmanaged;
+    
+    Task ExecuteOnAllAsync(Func<Accelerator, Task> action, CancellationToken ct = default);
+    Task<TResult> MapReduceAsync<TData, TResult>(
+        IEnumerable<TData> data,
+        Func<Accelerator, IEnumerable<TData>, Task<TResult>> map,
+        Func<TResult, TResult, TResult> reduce,
+        CancellationToken ct = default);
+}
+```
+
+### Deliverables Phase 5:
+- Built-in memory pooling with adaptive management
+- Comprehensive performance profiling and monitoring
+- Unified memory support for seamless CPU/GPU data flow
+- LINQ-style GPU operations for productivity
+- Advanced multi-GPU orchestration capabilities
+- Kernel caching system with version management
+- Performance benchmarks vs. current implementation
 
 ## Phase 6: Tensor Core Integration & .NET SIMD Unification (6-8 months)
 
@@ -1298,6 +1551,384 @@ public class ILGPUTensorOptions : ILGPUOptions
 - **Cross-Platform**: Support for Windows (CUDA), Linux (CUDA), and ARM64 (CPU SIMD)
 
 This tensor core integration positions ILGPU as a leading platform for high-performance ML/AI computing in the .NET ecosystem, providing both cutting-edge GPU acceleration and intelligent CPU fallback capabilities.
+
+## Phase 7: Cross-Platform AI Acceleration (6-9 months)
+
+### 7.1 **🔴 CRITICAL: Apple Silicon Integration**
+**Problem Addressed**: Apple M-series chips contain powerful GPU and Neural Engine cores that ILGPU cannot leverage.
+
+**Metal Performance Shaders (MPS) Backend:**
+```csharp
+namespace ILGPU.Backends.Metal
+{
+    public class MetalAccelerator : Accelerator
+    {
+        public MetalDevice Device { get; }
+        public bool SupportsNeuralEngine { get; }
+        public bool SupportsAMX { get; }
+        public MetalPerformanceShaders MPS { get; }
+        
+        // Unified memory is native on Apple Silicon
+        public override bool SupportsUnifiedMemory => true;
+        
+        public override IMemoryBuffer<T> Allocate<T>(long length) where T : unmanaged
+        {
+            // Leverage Apple's unified memory architecture
+            return new MetalUnifiedBuffer<T>(Device, length);
+        }
+    }
+
+    // Apple Neural Engine (ANE) Integration
+    public interface INeuralEngineAccelerator : IAccelerator
+    {
+        bool IsAvailable { get; }
+        ANECapabilities Capabilities { get; }
+        
+        // Optimized tensor operations on Neural Engine
+        Task<ITensor<T>> ExecuteNeuralAsync<T>(
+            NeuralOperation operation,
+            ITensor<T> input,
+            CancellationToken ct = default) where T : unmanaged, IFloatingPoint<T>;
+    }
+}
+```
+
+**Accelerate Framework Integration:**
+```csharp
+namespace ILGPU.Apple.Accelerate
+{
+    // P/Invoke to Apple's Accelerate framework
+    [LibraryImport("Accelerate.framework/Accelerate")]
+    public static partial class AccelerateNative
+    {
+        // BLAS operations
+        public static partial void cblas_sgemm(
+            CBLAS_ORDER order, CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
+            int M, int N, int K, float alpha, IntPtr A, int lda,
+            IntPtr B, int ldb, float beta, IntPtr C, int ldc);
+            
+        // BNNS (Basic Neural Network Subroutines)
+        public static partial IntPtr BNNSFilterCreateConvolutionLayer(
+            ref BNNSImageStackDescriptor input,
+            ref BNNSImageStackDescriptor output,
+            ref BNNSConvolutionLayerParameters parameters,
+            ref BNNSFilterParameters filter_params);
+    }
+}
+```
+
+### 7.2 **🔴 CRITICAL: Intel AI Accelerator Integration**
+**Problem Addressed**: Intel AMX and AI accelerators provide specialized compute capabilities.
+
+**Intel AMX (Advanced Matrix Extensions):**
+```csharp
+namespace ILGPU.Intel.AMX
+{
+    public interface IAMXAccelerator : IAccelerator
+    {
+        bool SupportsAMX { get; }
+        AMXCapabilities Capabilities { get; }
+        
+        // Tile-based matrix operations
+        Task<ITensor<T>> TileMatMulAsync<T>(
+            ITensor<T> a, ITensor<T> b,
+            TileConfiguration config,
+            CancellationToken ct = default) where T : unmanaged;
+    }
+
+    public class AMXKernel
+    {
+        // AMX intrinsics mapping
+        [AMXIntrinsic("_tile_loadd")]
+        public static extern void TileLoad(int dst, IntPtr src, int stride);
+        
+        [AMXIntrinsic("_tile_dpbf16ps")]
+        public static extern void TileDotProductBF16(int dst, int src1, int src2);
+        
+        [AMXIntrinsic("_tile_stored")]
+        public static extern void TileStore(IntPtr dst, int stride, int src);
+    }
+}
+```
+
+**Intel OneAPI Integration:**
+```csharp
+namespace ILGPU.Intel.OneAPI
+{
+    public class OneAPIAccelerator : Accelerator
+    {
+        public SyclDevice Device { get; }
+        public OneAPIBackend Backend { get; } // CPU, GPU, FPGA
+        
+        public override async Task<IKernel> CompileKernelAsync(
+            KernelSource source,
+            CompilationOptions options,
+            CancellationToken ct = default)
+        {
+            // Compile to SPIR-V or native code
+            if (Backend == OneAPIBackend.GPU)
+            {
+                return await CompileToSPIRVAsync(source, options);
+            }
+            else if (Backend == OneAPIBackend.CPU)
+            {
+                return await CompileWithDPCPPAsync(source, options);
+            }
+            
+            throw new NotSupportedException($"Backend {Backend} not supported");
+        }
+    }
+}
+```
+
+### 7.3 **🟡 HIGH: Performance Primitives Integration**
+**Problem Addressed**: Vendor-optimized libraries provide significant performance advantages.
+
+**Unified Performance Primitives Interface:**
+```csharp
+namespace ILGPU.PerformancePrimitives
+{
+    public interface IPerformancePrimitives
+    {
+        string Vendor { get; }
+        Version Version { get; }
+        IImageProcessing Image { get; }
+        ISignalProcessing Signal { get; }
+        IStatisticalFunctions Statistics { get; }
+        ILinearAlgebra LinearAlgebra { get; }
+        ICryptography Cryptography { get; }
+    }
+
+    // Common interface for all vendors
+    public interface ILinearAlgebra
+    {
+        Task<Matrix<T>> GemmAsync<T>(
+            Matrix<T> a, Matrix<T> b, 
+            T alpha = default, T beta = default,
+            bool transA = false, bool transB = false,
+            CancellationToken ct = default) where T : unmanaged, INumber<T>;
+    }
+}
+```
+
+### 7.4 **🟡 HIGH: Intelligent Workload Distribution**
+**Problem Addressed**: Optimize compute distribution across heterogeneous hardware.
+
+**Multi-Backend Orchestration:**
+```csharp
+namespace ILGPU.Runtime.Orchestration
+{
+    public class HybridComputeOrchestrator
+    {
+        private readonly Dictionary<ComputeCapability, IAccelerator> _accelerators;
+        private readonly IWorkloadAnalyzer _analyzer;
+        private readonly IPerformanceMonitor _monitor;
+        
+        public async Task<ITensor<T>> ExecuteAsync<T>(
+            ComputeGraph graph,
+            ExecutionStrategy strategy = ExecutionStrategy.Auto)
+            where T : unmanaged, INumber<T>
+        {
+            // Analyze workload characteristics
+            var analysis = await _analyzer.AnalyzeGraphAsync(graph);
+            
+            // Partition graph across available hardware
+            var partitions = await PartitionGraphAsync(graph, analysis);
+            
+            // Execute partitions in parallel across devices
+            var tasks = partitions.Select(p => ExecutePartitionAsync<T>(p));
+            var results = await Task.WhenAll(tasks);
+            
+            // Merge results
+            return await MergeResultsAsync(results);
+        }
+    }
+}
+```
+
+### Deliverables Phase 7:
+- **Apple Silicon Support**: Complete Metal, Neural Engine, and Accelerate framework integration
+- **Intel AI Accelerators**: AMX, OneAPI, and NPU support for Intel hardware
+- **Performance Primitives**: Unified interface for vendor-optimized libraries (Intel IPP, NVIDIA NPP, AMD ROCm, Apple Accelerate)
+- **Intelligent Orchestration**: Automatic workload distribution across all available hardware
+- **Cross-Platform Kernels**: Write-once, run-anywhere compute kernels
+
+## Phase 8: Universal Compute Platform (6-8 months)
+
+### 8.1 **🔴 CRITICAL: Unified Programming Model**
+**Problem Addressed**: Create a single API that works across all platforms and hardware.
+
+**Cross-Platform Kernel Definition:**
+```csharp
+namespace ILGPU.CrossPlatform
+{
+    // Universal kernel that compiles to all backends
+    [UniversalKernel]
+    public static void MatrixMultiplyKernel<T>(
+        ArrayView2D<T> a,
+        ArrayView2D<T> b,
+        ArrayView2D<T> result)
+        where T : unmanaged, INumber<T>
+    {
+        var row = Grid.GlobalIndex.Y;
+        var col = Grid.GlobalIndex.X;
+        
+        var sum = T.Zero;
+        for (int k = 0; k < a.Extent.X; k++)
+        {
+            sum += a[row, k] * b[k, col];
+        }
+        
+        result[row, col] = sum;
+    }
+    
+    // Platform-specific optimizations via attributes
+    [AppleOptimization(UseAMX = true)]
+    [IntelOptimization(UseAMX = true)]
+    [NvidiaOptimization(UseTensorCores = true)]
+    public static void OptimizedMatMul<T>(
+        ITensor<T> a, ITensor<T> b, ITensor<T> result)
+        where T : unmanaged, IFloatingPoint<T>
+    {
+        // Compiler selects best implementation for target
+    }
+}
+```
+
+### 8.2 **🟡 HIGH: Universal Memory Management**
+**Problem Addressed**: Seamless memory operations across all platforms.
+
+**Zero-Copy Operations Across All Platforms:**
+```csharp
+namespace ILGPU.Memory.Unified
+{
+    public class UniversalMemoryManager
+    {
+        public IUniversalBuffer<T> AllocateUniversal<T>(
+            long size,
+            MemoryPlacement placement = MemoryPlacement.Auto)
+            where T : unmanaged
+        {
+            return placement switch
+            {
+                MemoryPlacement.AppleUnified => 
+                    new AppleUnifiedBuffer<T>(size), // Native unified memory
+                    
+                MemoryPlacement.CudaManaged => 
+                    new CudaManagedBuffer<T>(size), // CUDA unified memory
+                    
+                MemoryPlacement.IntelShared => 
+                    new IntelSharedBuffer<T>(size), // Intel integrated GPU shared
+                    
+                MemoryPlacement.HostPinned => 
+                    new PinnedHostBuffer<T>(size), // CPU pinned memory
+                    
+                MemoryPlacement.Auto => 
+                    SelectOptimalPlacement<T>(size),
+                    
+                _ => throw new NotSupportedException()
+            };
+        }
+    }
+}
+```
+
+### 8.3 **🟡 HIGH: Performance-Aware Scheduling**
+**Problem Addressed**: Optimize execution across diverse hardware architectures.
+
+**Adaptive Scheduler:**
+```csharp
+namespace ILGPU.Runtime.Scheduling
+{
+    public class AdaptiveScheduler
+    {
+        public async Task<ExecutionPlan> CreateExecutionPlanAsync(
+            ComputeGraph graph,
+            IReadOnlyDictionary<ComputeDevice, IAccelerator> devices)
+        {
+            // Decision matrix based on operation type and data size
+            foreach (var node in graph.Nodes)
+            {
+                var device = node.Operation switch
+                {
+                    // Large matrix multiplication
+                    MatMulOp op when op.Size > 1024 * 1024 => 
+                        SelectBestTensorDevice(),
+                    
+                    // Convolution operations
+                    ConvolutionOp conv => 
+                        SelectBestConvolutionDevice(conv),
+                    
+                    // Small matrix operations
+                    MatMulOp op when op.Size < 1024 => 
+                        ComputeDevice.IntelAMX,
+                    
+                    // Vector operations
+                    VectorOp => 
+                        ComputeDevice.CpuSimd,
+                    
+                    _ => ComputeDevice.Auto
+                };
+            }
+        }
+    }
+}
+```
+
+### 8.4 **🟢 MEDIUM: ML Framework Integration**
+**Problem Addressed**: Seamless integration with .NET ML ecosystem.
+
+**ML.NET and ONNX Runtime Integration:**
+```csharp
+namespace ILGPU.ML.Integration
+{
+    // Custom ML.NET predictor using ILGPU universal acceleration
+    public class ILGPUUniversalPredictor : IPredictor
+    {
+        private readonly HybridComputeOrchestrator _orchestrator;
+        
+        public async ValueTask<VBuffer<float>> PredictAsync(VBuffer<float> input)
+        {
+            var tensor = TensorFactory.FromVBuffer(input);
+            var result = await _orchestrator.ExecuteAsync(tensor, _model);
+            return result.ToVBuffer();
+        }
+    }
+
+    // ONNX Runtime backend using universal ILGPU
+    public class ILGPUUniversalExecutionProvider : IExecutionProvider
+    {
+        public Task<NamedOnnxValue[]> RunAsync(
+            IReadOnlyCollection<NamedOnnxValue> inputs,
+            IReadOnlyCollection<string> outputNames)
+        {
+            // Automatically route operations to optimal hardware
+            // (NVIDIA tensor cores, Apple Neural Engine, Intel AMX, etc.)
+        }
+    }
+}
+```
+
+### Deliverables Phase 8:
+- **Universal Compute Platform**: Single API working across all major hardware platforms
+- **Cross-Platform Programming Model**: Write-once, run-anywhere with platform-specific optimizations
+- **Intelligent Hardware Selection**: Automatic routing to optimal compute resources
+- **Zero-Copy Memory Management**: Seamless data movement across all supported platforms
+- **Complete ML Framework Integration**: Production-ready ML.NET and ONNX Runtime support
+- **Performance Benchmarks**: Comprehensive comparison across all supported platforms
+
+### Universal Platform Support Matrix:
+
+| Platform | CPU SIMD | GPU Compute | Tensor Cores | Neural Engine | Matrix Extensions |
+|----------|----------|-------------|--------------|---------------|-------------------|
+| **Windows** | ✅ AVX/SSE | ✅ CUDA/OpenCL | ✅ NVIDIA | ❌ | ✅ Intel AMX |
+| **Linux** | ✅ AVX/SSE | ✅ CUDA/OpenCL/ROCm | ✅ NVIDIA/AMD | ❌ | ✅ Intel AMX |
+| **macOS Intel** | ✅ AVX/SSE | ✅ OpenCL | ❌ | ❌ | ❌ |
+| **macOS Apple Silicon** | ✅ NEON | ✅ Metal | ❌ | ✅ ANE | ✅ Apple AMX |
+| **iOS/iPadOS** | ✅ NEON | ✅ Metal | ❌ | ✅ ANE | ✅ Apple AMX |
+| **Android ARM64** | ✅ NEON | ✅ OpenCL/Vulkan | ❌ | Varies | ❌ |
+
+This universal compute platform positions ILGPU as the premier acceleration framework for .NET, providing automatic optimization across the entire spectrum of modern compute hardware.
 
 ---
 
