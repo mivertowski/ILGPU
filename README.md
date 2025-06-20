@@ -2,6 +2,8 @@
 
 > **Forked from**: [ILGPU](https://github.com/m4rs-mt/ILGPU) - Enhanced with comprehensive modernization and cross-platform AI acceleration
 
+** STILL WIP **
+
 ILGPU is a modern, AOT-compatible compute acceleration framework for high-performance GPU programs written in .NET-based languages. Originally a JIT compiler, ILGPU has been transformed into a **universal compute platform** that intelligently leverages all available hardware acceleration capabilities across platforms.
 
 ## 🚀 **Universal Platform Support**
@@ -64,7 +66,8 @@ ILGPU now provides a **single, unified API** that automatically optimizes across
 ### Installation
 ```bash
 # Install ILGPU with universal acceleration
-dotnet add package ILGPU --version 2.0.0-preview
+# dotnet add package ILGPU --version tbd
+# work in progress
 ```
 
 ### Basic Usage
@@ -174,6 +177,8 @@ Detailed license information can be found in LICENSE.txt.
 Copyright (c) 2016-2025 ILGPU Project. All rights reserved.
 
 Originally developed by Marcel Koester.
+
+Enhancements developed by Michael Ivertowski.
 
 ## License information of required dependencies
 
