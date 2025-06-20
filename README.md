@@ -176,6 +176,8 @@ Copyright (c) 2016-2025 ILGPU Project. All rights reserved.
 
 Originally developed by Marcel Koester.
 
+Enhancements developed by Michael Ivertowski.
+
 ## License information of required dependencies
 
 Different parts of ILGPU require different third-party libraries.
