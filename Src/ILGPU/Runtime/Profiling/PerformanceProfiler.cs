@@ -28,6 +28,22 @@ namespace ILGPU.Runtime.Profiling
     /// </summary>
     public sealed class PerformanceProfiler : IPerformanceProfiler
     {
+        #region Static Fields
+
+        /// <summary>
+        /// Cached JSON serializer options for export operations.
+        /// </summary>
+        private static readonly JsonSerializerOptions JsonExportOptions = new()
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
+
+        #endregion
+
+        #region Fields
+
         private readonly object sessionLock = new();
         private readonly ConcurrentBag<ProfileSessionReport> completedSessions = new();
         private readonly ConcurrentDictionary<string, KernelExecutionRecord> activeKernelExecutions = new();
@@ -456,7 +472,7 @@ namespace ILGPU.Runtime.Profiling
             };
         }
 
-        private KernelStatistics CalculateKernelStatistics(List<KernelExecutionRecord> executions)
+        private static KernelStatistics CalculateKernelStatistics(List<KernelExecutionRecord> executions)
         {
             var executionTimes = executions.Select(e => e.ExecutionTime.Ticks).ToList();
             var totalTime = executionTimes.Sum();
@@ -479,7 +495,7 @@ namespace ILGPU.Runtime.Profiling
             };
         }
 
-        private MemoryOperationStatistics CalculateMemoryOperationStatistics(List<MemoryOperationRecord> operations)
+        private static MemoryOperationStatistics CalculateMemoryOperationStatistics(List<MemoryOperationRecord> operations)
         {
             var totalBytes = operations.Sum(o => o.SizeInBytes);
             var totalTime = operations.Sum(o => o.Duration.Ticks);
@@ -499,7 +515,7 @@ namespace ILGPU.Runtime.Profiling
             };
         }
 
-        private EventStatistics CalculateEventStatistics(List<CustomEventRecord> events)
+        private static EventStatistics CalculateEventStatistics(List<CustomEventRecord> events)
         {
             var totalDuration = events.Sum(e => e.Duration.Ticks);
             var durations = events.Select(e => e.Duration.Ticks).ToList();
@@ -515,7 +531,7 @@ namespace ILGPU.Runtime.Profiling
             };
         }
 
-        private SystemInformation GetSystemInformation()
+        private static SystemInformation GetSystemInformation()
         {
             return new SystemInformation
             {
@@ -569,7 +585,7 @@ namespace ILGPU.Runtime.Profiling
             return metrics;
         }
 
-        private List<PerformanceRecommendation> GenerateRecommendations(
+        private static List<PerformanceRecommendation> GenerateRecommendations(
             PerformanceMetrics metrics,
             List<KernelExecutionRecord> kernelExecutions,
             List<MemoryOperationRecord> memoryOperations)
@@ -621,14 +637,8 @@ namespace ILGPU.Runtime.Profiling
             return recommendations;
         }
 
-        private async Task ExportToJsonAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
+        private static async Task ExportToJsonAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
         {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-            };
 
             // Create a simplified export data structure to avoid serialization issues
             var exportData = reports.Select(r => new
@@ -678,10 +688,10 @@ namespace ILGPU.Runtime.Profiling
             }).ToList();
 
             using var stream = File.Create(filePath);
-            await JsonSerializer.SerializeAsync(stream, exportData, options, cancellationToken).ConfigureAwait(false);
+            await JsonSerializer.SerializeAsync(stream, exportData, JsonExportOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task ExportToCsvAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
+        private static async Task ExportToCsvAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
         {
             using var writer = new StreamWriter(filePath);
             
@@ -697,18 +707,20 @@ namespace ILGPU.Runtime.Profiling
             }
         }
 
-        private async Task ExportToChromeTracingAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
+        private static async Task ExportToChromeTracingAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
         {
             // Chrome Tracing format implementation would go here
             // For now, fallback to JSON
             await ExportToJsonAsync(filePath, reports, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task ExportToBinaryAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
+        private static async Task ExportToBinaryAsync(string filePath, IReadOnlyList<ProfileSessionReport> reports, CancellationToken cancellationToken)
         {
             // Binary format implementation would go here
             // For now, fallback to JSON
             await ExportToJsonAsync(filePath, reports, cancellationToken).ConfigureAwait(false);
         }
+
+        #endregion
     }
 }

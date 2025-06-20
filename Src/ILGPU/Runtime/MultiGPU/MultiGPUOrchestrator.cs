@@ -568,7 +568,7 @@ namespace ILGPU.Runtime.MultiGPU
         /// <summary>
         /// Distributes work items based on current GPU load.
         /// </summary>
-        private void DistributeLoadBased(
+        private static void DistributeLoadBased(
             List<MultiGPUWorkItem> workItems,
             List<GPUInfo> gpus,
             Dictionary<GPUInfo, List<MultiGPUWorkItem>> assignments)
@@ -612,7 +612,7 @@ namespace ILGPU.Runtime.MultiGPU
         /// <param name="totalSize">The total array size.</param>
         /// <param name="gpus">The available GPUs.</param>
         /// <returns>Chunk sizes for each GPU.</returns>
-        private int[] CalculateChunkSizes(int totalSize, List<GPUInfo> gpus)
+        private static int[] CalculateChunkSizes(int totalSize, List<GPUInfo> gpus)
         {
             var totalPerformance = gpus.Sum(g => g.PerformanceScore);
             var chunkSizes = new int[gpus.Count];

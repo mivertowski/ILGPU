@@ -33,8 +33,17 @@ namespace ILGPU.Tests.CPU
         
         public void Dispose()
         {
-            accelerator?.Dispose();
-            context?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                accelerator?.Dispose();
+                context?.Dispose();
+            }
         }
 
         [Fact]
