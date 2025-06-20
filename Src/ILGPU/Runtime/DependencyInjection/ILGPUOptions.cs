@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using ILGPU.Runtime.MemoryPooling;
 
 namespace ILGPU.Runtime.DependencyInjection
 {
@@ -42,9 +43,9 @@ namespace ILGPU.Runtime.DependencyInjection
         public bool EnableMemoryPooling { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the memory pool options.
+        /// Gets or sets the memory pool configuration.
         /// </summary>
-        public MemoryPoolOptions MemoryPoolOptions { get; set; } = new();
+        public MemoryPoolConfiguration MemoryPoolConfiguration { get; set; } = new();
 
         /// <summary>
         /// Gets or sets whether debug mode is enabled.
@@ -57,36 +58,6 @@ namespace ILGPU.Runtime.DependencyInjection
         public Action<Context.Builder>? ContextConfigurator { get; set; }
     }
 
-    /// <summary>
-    /// Memory pool configuration options.
-    /// </summary>
-    public sealed class MemoryPoolOptions
-    {
-        /// <summary>
-        /// Gets or sets the maximum pool size in bytes.
-        /// </summary>
-        public long MaxPoolSizeBytes { get; set; } = 1024L * 1024 * 1024; // 1GB
-
-        /// <summary>
-        /// Gets or sets the maximum buffer size in bytes.
-        /// </summary>
-        public long MaxBufferSizeBytes { get; set; } = 100L * 1024 * 1024; // 100MB
-
-        /// <summary>
-        /// Gets or sets the pool retention policy.
-        /// </summary>
-        public PoolRetentionPolicy RetentionPolicy { get; set; } = PoolRetentionPolicy.Adaptive;
-
-        /// <summary>
-        /// Gets or sets the buffer trim interval.
-        /// </summary>
-        public TimeSpan BufferTrimInterval { get; set; } = TimeSpan.FromMinutes(5);
-
-        /// <summary>
-        /// Gets or sets whether to enable pool statistics tracking.
-        /// </summary>
-        public bool EnableStatistics { get; set; } = true;
-    }
 
     /// <summary>
     /// Performance profiling configuration options.
@@ -119,26 +90,6 @@ namespace ILGPU.Runtime.DependencyInjection
         public ProfilingOutputFormat OutputFormat { get; set; } = ProfilingOutputFormat.Json;
     }
 
-    /// <summary>
-    /// Pool retention policy enumeration.
-    /// </summary>
-    public enum PoolRetentionPolicy
-    {
-        /// <summary>
-        /// Immediately return buffers to the system.
-        /// </summary>
-        Immediate,
-
-        /// <summary>
-        /// Keep buffers for a fixed time period.
-        /// </summary>
-        Fixed,
-
-        /// <summary>
-        /// Adaptively manage buffer retention based on usage patterns.
-        /// </summary>
-        Adaptive
-    }
 
     /// <summary>
     /// Profiling output format enumeration.
