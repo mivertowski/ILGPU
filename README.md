@@ -1,14 +1,14 @@
-# ILGPU - Universal Compute Acceleration Platform for .NET
+# ILGPU-AOT - Universal Compute Acceleration Platform for .NET
 
 > **Forked from**: [ILGPU](https://github.com/m4rs-mt/ILGPU) - Enhanced with comprehensive modernization and cross-platform AI acceleration
 
 ** STILL WIP **
 
-ILGPU is a modern, AOT-compatible compute acceleration framework for high-performance GPU programs written in .NET-based languages. Originally a JIT compiler, ILGPU has been transformed into a **universal compute platform** that intelligently leverages all available hardware acceleration capabilities across platforms.
+ILGPU-AOT is a modern, AOT-compatible compute acceleration framework for high-performance GPU programs written in .NET-based languages. Originally a JIT compiler, ILGPU-AOT has been transformed into a **universal compute platform** that intelligently leverages all available hardware acceleration capabilities across platforms.
 
 ## 🚀 **Universal Platform Support**
 
-ILGPU now provides a **single, unified API** that automatically optimizes across:
+ILGPU-AOT now provides a **single, unified API** that automatically optimizes across:
 
 - **NVIDIA**: CUDA, Tensor Cores, NPP performance primitives
 - **AMD**: ROCm, RDNA compute, performance libraries
@@ -64,7 +64,6 @@ ILGPU now provides a **single, unified API** that automatically optimizes across
 - **BFloat16 Implementation**: Full Brain Floating Point support for ML workloads
 
 ### 📋 **Upcoming Phases**
-- **Phase 5**: Advanced Performance & Optimization (Memory pooling, LINQ-style operations, multi-GPU)
 - **Phase 7**: Cross-Platform AI Acceleration (Apple Silicon, Intel AI accelerators)
 - **Phase 8**: Universal Compute Platform (Single API across all hardware)
 
@@ -231,7 +230,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## 🎯 **Roadmap Goals**
 
-Transform ILGPU into the **premier compute acceleration framework for .NET**:
+Transform ILGPU-AOT into a **premier compute acceleration framework for .NET**:
 
 1. **Universal Hardware Support**: Single API for all compute hardware
 2. **Intelligent Optimization**: Automatic selection of optimal execution paths
@@ -250,27 +249,16 @@ Transform ILGPU into the **premier compute acceleration framework for .NET**:
 
 # License information
 
-ILGPU is licensed under the University of Illinois/NCSA Open Source License.
+ILGPU & ILGPU-AOT are licensed under the University of Illinois/NCSA Open Source License.
 Detailed license information can be found in LICENSE.txt.
 
-Copyright (c) 2016-2025 ILGPU Project. All rights reserved.
+Copyright (c) 2016-2025 ILGPU Project, 2024-2025 ILGPU-AOT Project. All rights reserved.
 
-Originally developed by Marcel Koester.
+Originally developed by Marcel Koester (ILGPU).
 
-Enhancements developed by Michael Ivertowski.
+Enhancements developed by Michael Ivertowski (ILGPU-AOT).
 
 ## License information of required dependencies
-
-Different parts of ILGPU require different third-party libraries.
-* ILGPU Dependencies
-    - System.Collections.Immutable
-    (https://www.nuget.org/packages/System.Collections.Immutable)
-    - System.Memory
-    (https://www.nuget.org/packages/System.Memory)
-    - System.Reflection.Metadata
-    (https://www.nuget.org/packages/System.Reflection.Metadata)
-    - System.Runtime.CompilerServices.Unsafe
-    (https://www.nuget.org/packages/system.runtime.CompilerServices.Unsafe/)
 
 Detailed copyright and license information of these dependencies can be found in
 LICENSE-3RD-PARTY.txt.
