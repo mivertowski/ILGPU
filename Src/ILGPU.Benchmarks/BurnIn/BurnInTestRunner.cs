@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: BurnInTestRunner.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -116,7 +117,7 @@ public class BurnInTestRunner
         DisplayBurnInResults();
     }
 
-    private async Task RunContinuousTensorCoreWorkload(CancellationToken cancellationToken, ProgressContext ctx)
+    private Task RunContinuousTensorCoreWorkload(CancellationToken cancellationToken, ProgressContext ctx)
     {
         var task = ctx.AddTask("[blue]Tensor Core Workload[/]", maxValue: 100);
         var iterations = 0;
@@ -124,13 +125,13 @@ public class BurnInTestRunner
         try
         {
             using var context = Context.Create(builder => builder.Default());
-            using var accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                                  context.GetPreferredDevice(AcceleratorType.CPU);
+            var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+            using var accelerator = device?.CreateAccelerator(context);
 
             if (accelerator == null)
             {
                 task.Description = "[red]No accelerator available[/]";
-                return;
+                return Task.CompletedTask;
             }
 
             var matrixSize = 512;
@@ -149,7 +150,7 @@ public class BurnInTestRunner
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                kernel(accelerator.DefaultStream, new Index2D(matrixSize, matrixSize),
+                kernel( new Index2D(matrixSize, matrixSize),
                     matrixA.View, matrixB.View, result.View, matrixSize);
                 
                 accelerator.Synchronize();
@@ -167,6 +168,8 @@ public class BurnInTestRunner
             task.Description = $"[red]Tensor Core Error: {ex.Message}[/]";
             logger.LogError(ex, "Tensor core workload failed");
         }
+        
+        return Task.CompletedTask;
     }
 
     private async Task RunContinuousSimdWorkload(CancellationToken cancellationToken, ProgressContext ctx)
@@ -193,7 +196,7 @@ public class BurnInTestRunner
                 // Perform various SIMD operations
                 VectorOperations.Add(vectorA.AsSpan(), vectorB.AsSpan(), result.AsSpan());
                 VectorOperations.Multiply(vectorA.AsSpan(), vectorB.AsSpan(), result.AsSpan());
-                _ = VectorOperations.DotProduct(vectorA.AsSpan(), vectorB.AsSpan());
+                _ = VectorOperations.DotProduct<float>(vectorA.AsSpan(), vectorB.AsSpan());
 
                 iterations++;
 
@@ -224,8 +227,8 @@ public class BurnInTestRunner
         try
         {
             using var context = Context.Create(builder => builder.Default());
-            using var accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                                  context.GetPreferredDevice(AcceleratorType.CPU);
+            var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+            using var accelerator = device?.CreateAccelerator(context);
 
             if (accelerator == null)
             {
@@ -277,7 +280,7 @@ public class BurnInTestRunner
 
             var tensorSize = 256;
             using var tensor = UnifiedTensor.Random<float>(
-                context.GetPreferredDevice(AcceleratorType.CPU), 
+                context.GetPreferredDevice(preferCPU: true)?.CreateAccelerator(context)!, 
                 new TensorShape(tensorSize, tensorSize));
 
             while (!cancellationToken.IsCancellationRequested)

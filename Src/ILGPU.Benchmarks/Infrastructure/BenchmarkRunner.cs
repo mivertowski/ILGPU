@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: BenchmarkRunner.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -53,22 +54,22 @@ public class BenchmarkRunner
 
                 // Basic SIMD operations
                 task.Description = "[green]SIMD Vector Operations[/]";
-                BenchmarkRunner.Run<SimdVectorBenchmarks>(config.QuickConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<SimdVectorBenchmarks>(config.QuickConfig);
                 task.Increment(25);
 
                 // Basic tensor operations
                 task.Description = "[green]Basic Tensor Operations[/]";
-                BenchmarkRunner.Run<TensorCoreBenchmarks>(config.QuickConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<TensorCoreBenchmarks>(config.QuickConfig);
                 task.Increment(25);
 
                 // Memory operations
                 task.Description = "[green]Memory Operations[/]";
-                BenchmarkRunner.Run<MemoryBenchmarks>(config.QuickConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<MemoryBenchmarks>(config.QuickConfig);
                 task.Increment(25);
 
                 // Hybrid processing
                 task.Description = "[green]Hybrid Processing[/]";
-                BenchmarkRunner.Run<HybridProcessingBenchmarks>(config.QuickConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<HybridProcessingBenchmarks>(config.QuickConfig);
                 task.Increment(25);
 
                 task.Description = "[green]Quick suite completed![/]";
@@ -92,15 +93,15 @@ public class BenchmarkRunner
                 var task = ctx.AddTask("[blue]Running tensor core benchmarks...[/]", maxValue: 100);
 
                 task.Description = "[blue]Matrix Multiply-Accumulate (MMA)[/]";
-                BenchmarkRunner.Run<TensorCoreBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<TensorCoreBenchmarks>(config.StandardConfig);
                 task.Increment(33);
 
                 task.Description = "[blue]Mixed Precision Operations[/]";
-                BenchmarkRunner.Run<MixedPrecisionBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<MixedPrecisionBenchmarks>(config.StandardConfig);
                 task.Increment(33);
 
                 task.Description = "[blue]BFloat16 Operations[/]";
-                BenchmarkRunner.Run<BFloat16Benchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<BFloat16Benchmarks>(config.StandardConfig);
                 task.Increment(34);
 
                 task.Description = "[blue]Tensor core benchmarks completed![/]";
@@ -124,19 +125,19 @@ public class BenchmarkRunner
                 var task = ctx.AddTask("[yellow]Running SIMD benchmarks...[/]", maxValue: 100);
 
                 task.Description = "[yellow]Vector Operations (Add, Multiply, Dot Product)[/]";
-                BenchmarkRunner.Run<SimdVectorBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<SimdVectorBenchmarks>(config.StandardConfig);
                 task.Increment(25);
 
                 task.Description = "[yellow]Platform-Specific Intrinsics (AVX, SSE, NEON)[/]";
-                BenchmarkRunner.Run<PlatformIntrinsicsBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<PlatformIntrinsicsBenchmarks>(config.StandardConfig);
                 task.Increment(25);
 
                 task.Description = "[yellow]Matrix-Vector Operations[/]";
-                BenchmarkRunner.Run<MatrixVectorBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<MatrixVectorBenchmarks>(config.StandardConfig);
                 task.Increment(25);
 
                 task.Description = "[yellow]CPU vs GPU Vectorization[/]";
-                BenchmarkRunner.Run<CpuGpuComparisonBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<CpuGpuComparisonBenchmarks>(config.StandardConfig);
                 task.Increment(25);
 
                 task.Description = "[yellow]SIMD benchmarks completed![/]";
@@ -152,7 +153,7 @@ public class BenchmarkRunner
         AnsiConsole.Write(
             new Panel("[cyan1]Hybrid Processing Benchmarks[/]")
                 .Border(BoxBorder.Rounded)
-                .BorderColor(Color.Magenta));
+                .BorderColor(Color.Purple));
 
         await AnsiConsole.Progress()
             .StartAsync(async ctx =>
@@ -160,11 +161,11 @@ public class BenchmarkRunner
                 var task = ctx.AddTask("[magenta]Running hybrid benchmarks...[/]", maxValue: 100);
 
                 task.Description = "[magenta]Workload Distribution Strategies[/]";
-                BenchmarkRunner.Run<HybridProcessingBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<HybridProcessingBenchmarks>(config.StandardConfig);
                 task.Increment(50);
 
                 task.Description = "[magenta]CPU/GPU Pipeline Performance[/]";
-                BenchmarkRunner.Run<PipelineBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<PipelineBenchmarks>(config.StandardConfig);
                 task.Increment(50);
 
                 task.Description = "[magenta]Hybrid benchmarks completed![/]";
@@ -188,15 +189,15 @@ public class BenchmarkRunner
                 var task = ctx.AddTask("[orange1]Running memory benchmarks...[/]", maxValue: 100);
 
                 task.Description = "[orange1]Zero-Copy Operations[/]";
-                BenchmarkRunner.Run<MemoryBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<MemoryBenchmarks>(config.StandardConfig);
                 task.Increment(33);
 
                 task.Description = "[orange1]Memory Layout Optimization[/]";
-                BenchmarkRunner.Run<MemoryLayoutBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<MemoryLayoutBenchmarks>(config.StandardConfig);
                 task.Increment(33);
 
                 task.Description = "[orange1]Unified Memory Performance[/]";
-                BenchmarkRunner.Run<UnifiedMemoryBenchmarks>(config.StandardConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<UnifiedMemoryBenchmarks>(config.StandardConfig);
                 task.Increment(34);
 
                 task.Description = "[orange1]Memory benchmarks completed![/]";
@@ -242,7 +243,7 @@ public class BenchmarkRunner
                 mainTask.Increment(100);
 
                 mainTask.Description = "[red]Performance Scaling Tests[/]";
-                BenchmarkRunner.Run<ScalabilityBenchmarks>(config.ComprehensiveConfig);
+                BenchmarkDotNet.Running.BenchmarkRunner.Run<ScalabilityBenchmarks>(config.ComprehensiveConfig);
                 mainTask.Increment(100);
 
                 mainTask.Description = "[red]All benchmarks completed![/]";

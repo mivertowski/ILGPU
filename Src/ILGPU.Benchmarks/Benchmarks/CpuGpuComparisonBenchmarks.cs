@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: CpuGpuComparisonBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -34,12 +36,14 @@ public class CpuGpuComparisonBenchmarks : IDisposable
     [GlobalSetup]
     public void Setup()
     {
-        context = Context.Create(builder => builder.Cuda().CPU());
-        cpuAccelerator = context.CreateCPUAccelerator(0);
+        context = Context.CreateDefault();
+        var cpuDevice = context.GetPreferredDevice(preferCPU: true);
+        cpuAccelerator = cpuDevice?.CreateAccelerator(context);
         
         try
         {
-            gpuAccelerator = context.GetPreferredDevice(AcceleratorType.Cuda);
+            var gpuDevice = context.GetPreferredDevice(preferCPU: false);
+            gpuAccelerator = gpuDevice?.CreateAccelerator(context);
         }
         catch
         {
@@ -81,9 +85,9 @@ public class CpuGpuComparisonBenchmarks : IDisposable
         var vectorSize = Vector<float>.Count;
         
         var random = new Random(123);
-        for (int i = 0; i < DataSize; i++)
+        for (int j = 0; j < DataSize; j++)
         {
-            vectorB[i] = random.NextSingle();
+            vectorB[j] = random.NextSingle();
         }
 
         int i = 0;
@@ -156,8 +160,7 @@ public class CpuGpuComparisonBenchmarks : IDisposable
                 Index1D, ArrayView<float>, ArrayView<float>, ArrayView<float>>(
                 VectorAddKernel);
 
-            kernel(gpuAccelerator.DefaultStream, DataSize,
-                bufferA.View, bufferB.View, result.View);
+            kernel(DataSize, bufferA.View, bufferB.View, result.View);
                 
             gpuAccelerator.Synchronize();
         }
@@ -193,9 +196,9 @@ public class CpuGpuComparisonBenchmarks : IDisposable
         var sumVector = Vector<float>.Zero;
         
         var random = new Random(123);
-        for (int i = 0; i < DataSize; i++)
+        for (int j = 0; j < DataSize; j++)
         {
-            vectorB[i] = random.NextSingle();
+            vectorB[j] = random.NextSingle();
         }
 
         int i = 0;
@@ -245,8 +248,7 @@ public class CpuGpuComparisonBenchmarks : IDisposable
                 Index1D, ArrayView<float>, ArrayView<float>, ArrayView<float>, int>(
                 DotProductKernel);
 
-            kernel(gpuAccelerator.DefaultStream, DataSize,
-                bufferA.View, bufferB.View, result.View, DataSize);
+            kernel(DataSize, bufferA.View, bufferB.View, result.View, DataSize);
                 
             gpuAccelerator.Synchronize();
 
@@ -324,8 +326,7 @@ public class CpuGpuComparisonBenchmarks : IDisposable
                 Index2D, ArrayView<float>, ArrayView<float>, ArrayView<float>, int>(
                 MatrixMultiplyKernel);
 
-            kernel(gpuAccelerator.DefaultStream, new Index2D(matrixSize, matrixSize),
-                bufferA.View, bufferB.View, result.View, matrixSize);
+            kernel(new Index2D(matrixSize, matrixSize), bufferA.View, bufferB.View, result.View, matrixSize);
                 
             gpuAccelerator.Synchronize();
         }

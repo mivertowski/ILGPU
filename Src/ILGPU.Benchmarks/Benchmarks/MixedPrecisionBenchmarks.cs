@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: MixedPrecisionBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -34,14 +35,15 @@ public class MixedPrecisionBenchmarks : IDisposable
     {
         try
         {
-            context = Context.Create(builder => builder.Cuda().CPU());
-            accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                         context.GetPreferredDevice(AcceleratorType.CPU);
+            context = Context.CreateDefault();
+            var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+            accelerator = device?.CreateAccelerator(context);
         }
         catch
         {
-            context = Context.Create(builder => builder.CPU());
-            accelerator = context.CreateCPUAccelerator(0);
+            context = Context.CreateDefault();
+            var device = context.GetPreferredDevice(preferCPU: true);
+            accelerator = device?.CreateAccelerator(context);
         }
     }
 
@@ -56,7 +58,7 @@ public class MixedPrecisionBenchmarks : IDisposable
             Index1D, ArrayView<Half>, ArrayView<float>>(
             FP16ToFP32Kernel);
 
-        kernel(accelerator.DefaultStream, size, fp16Buffer.View, fp32Buffer.View);
+        kernel( size, fp16Buffer.View, fp32Buffer.View);
         accelerator.Synchronize();
     }
 
@@ -70,7 +72,7 @@ public class MixedPrecisionBenchmarks : IDisposable
         var random = new Random(42);
         for (int i = 0; i < size; i++)
         {
-            bf16Data[i] = new BFloat16(random.NextSingle());
+            bf16Data[i] = BFloat16.FromFloat(random.NextSingle());
         }
 
         for (int i = 0; i < size; i++)
@@ -92,7 +94,7 @@ public class MixedPrecisionBenchmarks : IDisposable
                 Index2D, ArrayView<Half>, ArrayView<Half>, ArrayView<float>, int>(
                 MixedPrecisionGEMMKernel);
 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
+            kernel( new Index2D(MatrixSize, MatrixSize),
                 matrixA.View, matrixB.View, result.View, MatrixSize);
             accelerator.Synchronize();
         }

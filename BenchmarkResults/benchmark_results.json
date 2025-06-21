@@ -1,0 +1,644 @@
+{
+  "metadata": {
+    "benchmarkDate": "2025-06-21T18:27:31.9923694Z",
+    "duration": "00:32:43.1806641",
+    "version": "1.0.0.0",
+    "system": {
+      "platform": "Unix 6.6.87.1",
+      "cpuInfo": "22 cores",
+      "memoryInfo": "1 MB working set",
+      "gpuInfo": "Detection pending",
+      "dotNetVersion": "9.0.4",
+      "timestamp": "2025-06-21T17:54:48.8040952Z"
+    }
+  },
+  "results": [
+    {
+      "suiteName": "Tensor Core Operations",
+      "description": "NVIDIA Tensor Core matrix operations with mixed precision",
+      "executionTime": "2025-06-21T18:22:30.3248228Z",
+      "results": [
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 536.4746726037736,
+          "throughputOpsPerSec": 1.8640208961711306,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 837.1511774015748,
+          "throughputOpsPerSec": 1.1945273768877565,
+          "allocatedBytes": 3257,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 924.2174116835442,
+          "throughputOpsPerSec": 1.0819964949355487,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 1047.0208639253112,
+          "throughputOpsPerSec": 0.9550908052118191,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.025591182926829267,
+          "throughputOpsPerSec": 39075.958421274096,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 6.5957087375,
+          "throughputOpsPerSec": 151.61372944115698,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 5.775986852272728,
+          "throughputOpsPerSec": 173.1305879975335,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 6.081627744186046,
+          "throughputOpsPerSec": 164.4296629230532,
+          "allocatedBytes": 3516,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 272.9132553571429,
+          "throughputOpsPerSec": 3.6641679375058884,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 510.0585978974359,
+          "throughputOpsPerSec": 1.96055904972919,
+          "allocatedBytes": 3257,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 1090.744341837607,
+          "throughputOpsPerSec": 0.9168051225599507,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 1097.2604319736843,
+          "throughputOpsPerSec": 0.9113606677689651,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.02423821052631579,
+          "throughputOpsPerSec": 41257.1711477745,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 7.0911232073170725,
+          "throughputOpsPerSec": 141.02138275754908,
+          "allocatedBytes": 3516,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 5.3894488048780484,
+          "throughputOpsPerSec": 185.54773154072623,
+          "allocatedBytes": 3478,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 4.9456813111111115,
+          "throughputOpsPerSec": 202.19661096103604,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 436.6543140346154,
+          "throughputOpsPerSec": 2.290141120467038,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 519.8759166553192,
+          "throughputOpsPerSec": 1.9235359207127996,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 557.7651403914894,
+          "throughputOpsPerSec": 1.7928693057047465,
+          "allocatedBytes": 3257,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 577.6641631938327,
+          "throughputOpsPerSec": 1.7311096372520767,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.03761353658536585,
+          "throughputOpsPerSec": 26586.173244583068,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 6.1649245,
+          "throughputOpsPerSec": 162.2079881108033,
+          "allocatedBytes": 3516,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 5.522148073170732,
+          "throughputOpsPerSec": 181.0889506673108,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 6.119798455555555,
+          "throughputOpsPerSec": 163.4040740495628,
+          "allocatedBytes": 3478,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 477.289254390411,
+          "throughputOpsPerSec": 2.0951655433290446,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 546.6449472155173,
+          "throughputOpsPerSec": 1.8293409736864272,
+          "allocatedBytes": 3257,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 302.86386673913046,
+          "throughputOpsPerSec": 3.301813487250173,
+          "allocatedBytes": 3226,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 778.0527803058824,
+          "throughputOpsPerSec": 1.2852598503752686,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.02337639534883721,
+          "throughputOpsPerSec": 42778.19505862105,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 6.708224158536585,
+          "throughputOpsPerSec": 149.07074903384748,
+          "allocatedBytes": 3498,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 6.843793058139535,
+          "throughputOpsPerSec": 146.1178021463798,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 6.634166952380952,
+          "throughputOpsPerSec": 150.734825815788,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 355.7446944848485,
+          "throughputOpsPerSec": 2.81100467695827,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 392.2300521984733,
+          "throughputOpsPerSec": 2.5495241743842403,
+          "allocatedBytes": 3257,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 538.7850435967742,
+          "throughputOpsPerSec": 1.8560277644759535,
+          "allocatedBytes": 3225,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 589.3993592741936,
+          "throughputOpsPerSec": 1.6966424958985944,
+          "allocatedBytes": 3226,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.027570756097560975,
+          "throughputOpsPerSec": 36270.31469363527,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 6.783503295454546,
+          "throughputOpsPerSec": 147.41645377692595,
+          "allocatedBytes": 3516,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 8.026596813953487,
+          "throughputOpsPerSec": 124.58580182594864,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 9.524675670731707,
+          "throughputOpsPerSec": 104.99045159856638,
+          "allocatedBytes": 3496,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 479.19127043795623,
+          "throughputOpsPerSec": 2.08684936828263,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 412.5170855081967,
+          "throughputOpsPerSec": 2.424142017701058,
+          "allocatedBytes": 3260,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 480.2149617,
+          "throughputOpsPerSec": 2.0824007574856034,
+          "allocatedBytes": 3239,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 561.6760849,
+          "throughputOpsPerSec": 1.780385576106625,
+          "allocatedBytes": 3239,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.021073797619047617,
+          "throughputOpsPerSec": 47452.29208693486,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 8.926967892857144,
+          "throughputOpsPerSec": 112.02011836517791,
+          "allocatedBytes": 3516,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 22.903700279069767,
+          "throughputOpsPerSec": 43.661067330410205,
+          "allocatedBytes": 3478,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 22.814992875,
+          "throughputOpsPerSec": 43.830826749710305,
+          "allocatedBytes": 3478,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 660.9863885747126,
+          "throughputOpsPerSec": 1.5128904577843179,
+          "allocatedBytes": 0,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 424.7990044745763,
+          "throughputOpsPerSec": 2.3540544809818376,
+          "allocatedBytes": 3284,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 528.6995987777777,
+          "throughputOpsPerSec": 1.8914332492624388,
+          "allocatedBytes": 3335,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 644.4908830566038,
+          "throughputOpsPerSec": 1.5516123288778514,
+          "allocatedBytes": 3344,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorFragmentOperations",
+          "success": true,
+          "durationMs": 0.02759645238095238,
+          "throughputOpsPerSec": 36236.54179151737,
+          "allocatedBytes": 67,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "TensorCoreMatrixMultiply",
+          "success": true,
+          "durationMs": 28.921841075,
+          "throughputOpsPerSec": 34.57594547341589,
+          "allocatedBytes": 3516,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "StandardMatrixMultiply",
+          "success": true,
+          "durationMs": 125.77591054999999,
+          "throughputOpsPerSec": 7.950648066288239,
+          "allocatedBytes": 3464,
+          "baselineRatio": null
+        },
+        {
+          "methodName": "MixedPrecisionOperations",
+          "success": true,
+          "durationMs": 141.66278259999999,
+          "throughputOpsPerSec": 7.059017066067429,
+          "allocatedBytes": 3464,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "SIMD Vector Operations",
+      "description": "Platform-specific SIMD operations (AVX/SSE/NEON)",
+      "executionTime": "2025-06-21T18:23:06.8315274Z",
+      "results": [
+        {
+          "methodName": "ScalarAddition",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Mixed Precision Arithmetic",
+      "description": "FP16/BF16/TF32/INT8 operations and conversions",
+      "executionTime": "2025-06-21T18:23:48.5692957Z",
+      "results": [
+        {
+          "methodName": "FP16ToFP32Conversion",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "BFloat16 Operations",
+      "description": "Brain Floating Point arithmetic for ML workloads",
+      "executionTime": "2025-06-21T18:24:20.4086798Z",
+      "results": [
+        {
+          "methodName": "BF16Addition",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Platform Intrinsics",
+      "description": "Hardware-specific intrinsics and optimization",
+      "executionTime": "2025-06-21T18:24:52.7716666Z",
+      "results": [
+        {
+          "methodName": "ScalarAddition",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Matrix-Vector Operations",
+      "description": "Linear algebra operations and cache optimization",
+      "executionTime": "2025-06-21T18:25:17.6575821Z",
+      "results": [
+        {
+          "methodName": "ScalarMatrixVectorMultiply",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "CPU vs GPU Comparison",
+      "description": "Cross-platform performance analysis",
+      "executionTime": "2025-06-21T18:25:44.0077458Z",
+      "results": [
+        {
+          "methodName": "ScalarCpuAddition",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Hybrid Processing",
+      "description": "CPU/GPU workload distribution strategies",
+      "executionTime": "2025-06-21T18:26:12.7879636Z",
+      "results": [
+        {
+          "methodName": "CpuOnlyProcessing",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Memory Operations",
+      "description": "Zero-copy operations and memory optimization",
+      "executionTime": "2025-06-21T18:26:38.1953993Z",
+      "results": [
+        {
+          "methodName": "StandardMemoryAllocation",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Unified Memory",
+      "description": "Unified memory coherence and performance",
+      "executionTime": "2025-06-21T18:27:06.1721736Z",
+      "results": [
+        {
+          "methodName": "StandardMemoryTransfer",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    },
+    {
+      "suiteName": "Scalability Analysis",
+      "description": "Performance scaling across problem sizes",
+      "executionTime": "2025-06-21T18:27:31.9820723Z",
+      "results": [
+        {
+          "methodName": "VectorAdditionScaling",
+          "success": false,
+          "durationMs": 0,
+          "throughputOpsPerSec": null,
+          "allocatedBytes": null,
+          "baselineRatio": null
+        }
+      ],
+      "success": true,
+      "errorMessage": null
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+Suite,Method,Performance_OpsPerSec,Memory_KB,Baseline_Ratio,Success,Duration_Ms
+Tensor Core Operations,TensorFragmentOperations,2,0,,True,536.47
+Tensor Core Operations,TensorCoreMatrixMultiply,1,3,,True,837.15
+Tensor Core Operations,StandardMatrixMultiply,1,3,,True,924.22
+Tensor Core Operations,MixedPrecisionOperations,1,3,,True,1047.02
+Tensor Core Operations,TensorFragmentOperations,39076,0,,True,0.03
+Tensor Core Operations,StandardMatrixMultiply,152,3,,True,6.60
+Tensor Core Operations,MixedPrecisionOperations,173,3,,True,5.78
+Tensor Core Operations,TensorCoreMatrixMultiply,164,3,,True,6.08
+Tensor Core Operations,TensorFragmentOperations,4,0,,True,272.91
+Tensor Core Operations,TensorCoreMatrixMultiply,2,3,,True,510.06
+Tensor Core Operations,MixedPrecisionOperations,1,3,,True,1090.74
+Tensor Core Operations,StandardMatrixMultiply,1,3,,True,1097.26
+Tensor Core Operations,TensorFragmentOperations,41257,0,,True,0.02
+Tensor Core Operations,TensorCoreMatrixMultiply,141,3,,True,7.09
+Tensor Core Operations,MixedPrecisionOperations,186,3,,True,5.39
+Tensor Core Operations,StandardMatrixMultiply,202,3,,True,4.95
+Tensor Core Operations,TensorFragmentOperations,2,0,,True,436.65
+Tensor Core Operations,StandardMatrixMultiply,2,3,,True,519.88
+Tensor Core Operations,TensorCoreMatrixMultiply,2,3,,True,557.77
+Tensor Core Operations,MixedPrecisionOperations,2,3,,True,577.66
+Tensor Core Operations,TensorFragmentOperations,26586,0,,True,0.04
+Tensor Core Operations,TensorCoreMatrixMultiply,162,3,,True,6.16
+Tensor Core Operations,MixedPrecisionOperations,181,3,,True,5.52
+Tensor Core Operations,StandardMatrixMultiply,163,3,,True,6.12
+Tensor Core Operations,TensorFragmentOperations,2,0,,True,477.29
+Tensor Core Operations,TensorCoreMatrixMultiply,2,3,,True,546.64
+Tensor Core Operations,StandardMatrixMultiply,3,3,,True,302.86
+Tensor Core Operations,MixedPrecisionOperations,1,3,,True,778.05
+Tensor Core Operations,TensorFragmentOperations,42778,0,,True,0.02
+Tensor Core Operations,TensorCoreMatrixMultiply,149,3,,True,6.71
+Tensor Core Operations,MixedPrecisionOperations,146,3,,True,6.84
+Tensor Core Operations,StandardMatrixMultiply,151,3,,True,6.63
+Tensor Core Operations,TensorFragmentOperations,3,0,,True,355.74
+Tensor Core Operations,TensorCoreMatrixMultiply,3,3,,True,392.23
+Tensor Core Operations,MixedPrecisionOperations,2,3,,True,538.79
+Tensor Core Operations,StandardMatrixMultiply,2,3,,True,589.40
+Tensor Core Operations,TensorFragmentOperations,36270,0,,True,0.03
+Tensor Core Operations,TensorCoreMatrixMultiply,147,3,,True,6.78
+Tensor Core Operations,StandardMatrixMultiply,125,3,,True,8.03
+Tensor Core Operations,MixedPrecisionOperations,105,3,,True,9.52
+Tensor Core Operations,TensorFragmentOperations,2,0,,True,479.19
+Tensor Core Operations,TensorCoreMatrixMultiply,2,3,,True,412.52
+Tensor Core Operations,StandardMatrixMultiply,2,3,,True,480.21
+Tensor Core Operations,MixedPrecisionOperations,2,3,,True,561.68
+Tensor Core Operations,TensorFragmentOperations,47452,0,,True,0.02
+Tensor Core Operations,TensorCoreMatrixMultiply,112,3,,True,8.93
+Tensor Core Operations,StandardMatrixMultiply,44,3,,True,22.90
+Tensor Core Operations,MixedPrecisionOperations,44,3,,True,22.81
+Tensor Core Operations,TensorFragmentOperations,2,0,,True,660.99
+Tensor Core Operations,TensorCoreMatrixMultiply,2,3,,True,424.80
+Tensor Core Operations,StandardMatrixMultiply,2,3,,True,528.70
+Tensor Core Operations,MixedPrecisionOperations,2,3,,True,644.49
+Tensor Core Operations,TensorFragmentOperations,36237,0,,True,0.03
+Tensor Core Operations,TensorCoreMatrixMultiply,35,3,,True,28.92
+Tensor Core Operations,StandardMatrixMultiply,8,3,,True,125.78
+Tensor Core Operations,MixedPrecisionOperations,7,3,,True,141.66
+SIMD Vector Operations,ScalarAddition,,,,False,0.00
+Mixed Precision Arithmetic,FP16ToFP32Conversion,,,,False,0.00
+BFloat16 Operations,BF16Addition,,,,False,0.00
+Platform Intrinsics,ScalarAddition,,,,False,0.00
+Matrix-Vector Operations,ScalarMatrixVectorMultiply,,,,False,0.00
+CPU vs GPU Comparison,ScalarCpuAddition,,,,False,0.00
+Hybrid Processing,CpuOnlyProcessing,,,,False,0.00
+Memory Operations,StandardMemoryAllocation,,,,False,0.00
+Unified Memory,StandardMemoryTransfer,,,,False,0.00
+Scalability Analysis,VectorAdditionScaling,,,,False,0.00

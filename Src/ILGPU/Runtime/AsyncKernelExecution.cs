@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: AsyncKernelExecution.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 

@@ -2,11 +2,32 @@
                                   ILGPU License
 ********************************************************************************
 University of Illinois/NCSA Open Source License
-Copyright (c) 2016-2025 ILGPU Project
+
+================================================================================
+                              Original ILGPU Project
+================================================================================
+Copyright (c) 2016-2024 ILGPU Project
 All rights reserved.
 
 Developed by:           Marcel Koester (m4rs@m4rs.net)
                         www.ilgpu.net
+
+================================================================================
+                                ILGPU-AOT Extensions
+================================================================================
+Copyright (c) 2024-2025 ILGPU-AOT Project
+All rights reserved.
+
+Developed by:           Michael Ivertowski
+
+This work includes extensions and enhancements to the original ILGPU project,
+including but not limited to:
+- Tensor Core Integration and Operations
+- BFloat16 Arithmetic Support
+- .NET SIMD Unification and Vector Operations
+- Advanced Memory Management and Unified Memory
+- Comprehensive Benchmarking Infrastructure
+- ML/AI Tensor Operations and Hybrid Processing
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal with
@@ -22,9 +43,9 @@ subject to the following conditions:
       this list of conditions and the following disclaimers in the documentation
       and/or other materials provided with the distribution.
 
-    * Neither the names of ILGPU, Marcel Koester, nor the names of its
-      contributors may be used to endorse or promote products derived from this
-      Software without specific prior written permission.
+    * Neither the names of ILGPU, ILGPU-AOT, Marcel Koester, Michael Ivertowski,
+      nor the names of their contributors may be used to endorse or promote
+      products derived from this Software without specific prior written permission.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS

@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: UnattendedBenchmarkRunner.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -69,15 +70,23 @@ public class UnattendedBenchmarkRunner
             try
             {
                 logger.LogInformation($"Running {name} benchmarks...");
-                var summary = BenchmarkRunner.Run(benchmarkType, config.StandardConfig);
+                var summary = BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarkType, config.QuickConfig);
+                
+                var results = ExtractBenchmarkResults(summary);
+                
+                // If no results were extracted but no errors, add a placeholder to indicate the suite was attempted
+                if (!results.Any() && !summary.HasCriticalValidationErrors && summary.BenchmarksCases.Any())
+                {
+                    logger.LogWarning($"No benchmark results extracted for {name}, but {summary.BenchmarksCases.Count()} cases were found");
+                }
                 
                 var result = new BenchmarkSuiteResult
                 {
                     SuiteName = name,
                     Description = description,
                     ExecutionTime = DateTime.UtcNow,
-                    Results = ExtractBenchmarkResults(summary),
-                    Success = summary.HasCriticalValidationErrors == false
+                    Results = results,
+                    Success = !summary.HasCriticalValidationErrors && results.Any()
                 };
                 
                 benchmarkResults.Add(result);
@@ -143,10 +152,9 @@ public class UnattendedBenchmarkRunner
             var totalTests = suite.Results.Count;
             var successRate = totalTests > 0 ? (successfulTests * 100.0 / totalTests) : 0;
             
-            var bestPerf = suite.Results.Where(r => r.Success && r.ThroughputOpsPerSec.HasValue)
-                                      .Max(r => r.ThroughputOpsPerSec) ?? 0;
-            var avgPerf = suite.Results.Where(r => r.Success && r.ThroughputOpsPerSec.HasValue)
-                                     .Average(r => r.ThroughputOpsPerSec) ?? 0;
+            var successfulPerformanceResults = suite.Results.Where(r => r.Success && r.ThroughputOpsPerSec.HasValue).ToList();
+            var bestPerf = successfulPerformanceResults.Any() ? successfulPerformanceResults.Max(r => r.ThroughputOpsPerSec!.Value) : 0;
+            var avgPerf = successfulPerformanceResults.Any() ? successfulPerformanceResults.Average(r => r.ThroughputOpsPerSec!.Value) : 0;
 
             markdown.AppendLine($"| {suite.SuiteName} | {totalTests} | {successRate:F1}% | {FormatPerformance(bestPerf)} | {FormatPerformance(avgPerf)} |");
         }
@@ -214,8 +222,8 @@ public class UnattendedBenchmarkRunner
         var tensorResults = results.FirstOrDefault(r => r.SuiteName.Contains("Tensor Core"));
         if (tensorResults?.Success == true && tensorResults.Results.Any())
         {
-            var bestTensorPerf = tensorResults.Results.Where(r => r.Success && r.ThroughputOpsPerSec.HasValue)
-                                                     .Max(r => r.ThroughputOpsPerSec.Value);
+            var tensorPerfResults = tensorResults.Results.Where(r => r.Success && r.ThroughputOpsPerSec.HasValue).ToList();
+            var bestTensorPerf = tensorPerfResults.Any() ? tensorPerfResults.Max(r => r.ThroughputOpsPerSec!.Value) : 0;
             if (bestTensorPerf > 0)
             {
                 insights.Add($"🚀 **Tensor Cores:** Peak performance of {FormatPerformance(bestTensorPerf)} achieved");
@@ -226,8 +234,8 @@ public class UnattendedBenchmarkRunner
         var simdResults = results.FirstOrDefault(r => r.SuiteName.Contains("SIMD"));
         if (simdResults?.Success == true && simdResults.Results.Any())
         {
-            var simdSpeedup = simdResults.Results.Where(r => r.Success && r.BaselineRatio.HasValue)
-                                                .Max(r => r.BaselineRatio.Value);
+            var simdSpeedupResults = simdResults.Results.Where(r => r.Success && r.BaselineRatio.HasValue).ToList();
+            var simdSpeedup = simdSpeedupResults.Any() ? simdSpeedupResults.Max(r => r.BaselineRatio!.Value) : 1;
             if (simdSpeedup > 1)
             {
                 insights.Add($"⚡ **SIMD Acceleration:** Up to {simdSpeedup:F1}x speedup over scalar operations");
@@ -375,9 +383,9 @@ public class UnattendedBenchmarkRunner
                 var successfulResults = suite.Results.Where(r => r.Success && r.ThroughputOpsPerSec.HasValue).ToList();
                 if (successfulResults.Any())
                 {
-                    var minPerf = successfulResults.Min(r => r.ThroughputOpsPerSec.Value);
-                    var maxPerf = successfulResults.Max(r => r.ThroughputOpsPerSec.Value);
-                    var avgPerf = successfulResults.Average(r => r.ThroughputOpsPerSec.Value);
+                    var minPerf = successfulResults.Min(r => r.ThroughputOpsPerSec!.Value);
+                    var maxPerf = successfulResults.Max(r => r.ThroughputOpsPerSec!.Value);
+                    var avgPerf = successfulResults.Average(r => r.ThroughputOpsPerSec!.Value);
                     
                     markdown.AppendLine($"**Performance Range:** {FormatPerformance(minPerf)} - {FormatPerformance(maxPerf)}");
                     markdown.AppendLine($"**Average Performance:** {FormatPerformance(avgPerf)}");
@@ -395,12 +403,30 @@ public class UnattendedBenchmarkRunner
 
     private BenchmarkSystemInfo GatherSystemInformation()
     {
+        var gpuInfo = "No GPU detected";
+        try
+        {
+            using var context = Context.CreateDefault();
+            foreach (var device in context.Devices)
+            {
+                if (device.AcceleratorType != ILGPU.Runtime.AcceleratorType.CPU)
+                {
+                    gpuInfo = $"{device.Name} ({device.AcceleratorType})";
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning($"Failed to detect GPU: {ex.Message}");
+        }
+        
         return new BenchmarkSystemInfo
         {
             Platform = Environment.OSVersion.ToString(),
             CpuInfo = Environment.ProcessorCount + " cores",
             MemoryInfo = $"{GC.GetTotalMemory(false) / (1024 * 1024):N0} MB working set",
-            GpuInfo = "Detection pending", // Will be enhanced
+            GpuInfo = gpuInfo,
             DotNetVersion = Environment.Version.ToString(),
             Timestamp = DateTime.UtcNow
         };
@@ -410,6 +436,25 @@ public class UnattendedBenchmarkRunner
     {
         var results = new List<BenchmarkResult>();
         
+        // Handle case where no reports were generated
+        if (!summary.Reports.Any() && summary.BenchmarksCases.Any())
+        {
+            // Add placeholder results for benchmarks that were discovered but didn't run
+            foreach (var benchmarkCase in summary.BenchmarksCases)
+            {
+                results.Add(new BenchmarkResult
+                {
+                    MethodName = benchmarkCase.Descriptor.WorkloadMethod.Name,
+                    Success = false,
+                    DurationMs = 0,
+                    ThroughputOpsPerSec = null,
+                    AllocatedBytes = null,
+                    BaselineRatio = null
+                });
+            }
+            return results;
+        }
+        
         foreach (var report in summary.Reports)
         {
             try
@@ -417,12 +462,11 @@ public class UnattendedBenchmarkRunner
                 var result = new BenchmarkResult
                 {
                     MethodName = report.BenchmarkCase.Descriptor.WorkloadMethod.Name,
-                    Success = !report.HasCriticalValidationErrors,
-                    DurationMs = report.ResultStatistics?.Mean / 1_000_000, // Convert ns to ms
-                    ThroughputOpsPerSec = report.ResultStatistics?.Mean > 0 ? 1_000_000_000 / report.ResultStatistics.Mean : null,
-                    AllocatedBytes = report.GcStats?.GetBytesAllocatedPerOperation(report.BenchmarkCase),
-                    BaselineRatio = summary.GetBaseline()?.ResultStatistics?.Mean > 0 && report.ResultStatistics?.Mean > 0 
-                        ? summary.GetBaseline().ResultStatistics.Mean / report.ResultStatistics.Mean : null
+                    Success = report.AllMeasurements.Any(),
+                    DurationMs = report.AllMeasurements.Any() ? report.AllMeasurements.Select(m => m.Nanoseconds).Average() / 1_000_000 : 0, // Convert ns to ms
+                    ThroughputOpsPerSec = report.AllMeasurements.Any() && report.AllMeasurements.Select(m => m.Nanoseconds).Average() > 0 ? 1_000_000_000 / report.AllMeasurements.Select(m => m.Nanoseconds).Average() : null,
+                    AllocatedBytes = report.GcStats.GetBytesAllocatedPerOperation(report.BenchmarkCase),
+                    BaselineRatio = null // Baseline ratio calculation needs proper baseline report access
                 };
                 
                 results.Add(result);

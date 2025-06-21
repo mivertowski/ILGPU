@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: PipelineBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -35,9 +36,9 @@ public class PipelineBenchmarks : IDisposable
     [GlobalSetup]
     public void Setup()
     {
-        context = Context.Create(builder => builder.Cuda().CPU());
-        accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                     context.GetPreferredDevice(AcceleratorType.CPU);
+        context = Context.CreateDefault();
+        var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+        accelerator = device?.CreateAccelerator(context);
 
         // Create test data batches
         testData = new float[BatchSize][];
@@ -223,8 +224,11 @@ public class PipelineBenchmarks : IDisposable
                     Index1D, ArrayView<float>, ArrayView<float>>(
                     ProcessKernel);
                 
-                kernel(computeStream, testData[i].Length,
+                kernel(testData[i].Length,
                     inputBuffer.View, outputBuffer.View);
+                
+                // Execute on compute stream
+                computeStream.Synchronize();
                 
                 // Overlapped synchronization
                 await Task.WhenAll(
@@ -300,7 +304,7 @@ public class PipelineBenchmarks : IDisposable
                 Index1D, ArrayView<float>, ArrayView<float>>(
                 ProcessKernel);
             
-            kernel(accelerator.DefaultStream, input.Length,
+            kernel(input.Length,
                 inputBuffer.View, outputBuffer.View);
             
             await accelerator.DefaultStream.SynchronizeAsync();

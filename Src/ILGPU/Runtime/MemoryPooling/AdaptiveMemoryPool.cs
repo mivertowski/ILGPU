@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: AdaptiveMemoryPool.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -375,8 +377,12 @@ namespace ILGPU.Runtime.MemoryPooling
             // ITypedMemoryBuffer<T> implementation
             public ArrayView<T> View => Buffer.AsContiguous();
 
-            public Task<T[]> GetAsArrayAsync(CancellationToken cancellationToken = default) => 
-                Buffer.GetAsArrayAsync(cancellationToken);
+            public Task<T[]> GetAsArrayAsync(CancellationToken cancellationToken = default)
+            {
+                var result = new T[Buffer.Length];
+                Buffer.AsContiguous().CopyToCPU(result);
+                return Task.FromResult(result);
+            }
             
             public Task CopyToAsync(ITypedMemoryBuffer<T> destination, CancellationToken cancellationToken = default) =>
                 Buffer.CopyToAsync(destination, cancellationToken);

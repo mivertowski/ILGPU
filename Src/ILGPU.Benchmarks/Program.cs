@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: Program.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -36,6 +37,28 @@ public class Program
             {
                 return await RunUnattendedBenchmarksAsync(args);
             }
+            
+            // Check for diagnostics mode
+            if (args.Contains("--diagnose"))
+            {
+                TestBenchmarkRunner.RunDiagnostics();
+                return 0;
+            }
+            
+            // Report generation removed for now
+            
+            // Check for debug mode
+            if (args.Contains("--debug-benchmark"))
+            {
+                DebugBenchmarkRunner.RunSingleBenchmark();
+                return 0;
+            }
+            
+            if (args.Contains("--debug-all"))
+            {
+                DebugBenchmarkRunner.TestAllBenchmarkTypes();
+                return 0;
+            }
 
             AnsiConsole.Write(
                 new FigletText("ILGPU Phase 6")
@@ -52,7 +75,7 @@ public class Program
             using var host = CreateHostBuilder(args).Build();
             await host.StartAsync();
 
-            var benchmarkRunner = host.Services.GetRequiredService<BenchmarkRunner>();
+            var benchmarkRunner = host.Services.GetRequiredService<Infrastructure.BenchmarkRunner>();
             var burnInRunner = host.Services.GetRequiredService<BurnInTestRunner>();
 
             // Show main menu
@@ -174,7 +197,7 @@ public class Program
                     builder.SetMinimumLevel(LogLevel.Information);
                 });
 
-                services.AddSingleton<BenchmarkRunner>();
+                services.AddSingleton<Infrastructure.BenchmarkRunner>();
                 services.AddSingleton<BurnInTestRunner>();
                 services.AddSingleton<UnattendedBenchmarkRunner>();
                 services.AddSingleton<BenchmarkConfig>();
@@ -218,15 +241,15 @@ public static class SystemInfo
         // ILGPU information
         try
         {
-            using var context = Context.Create(builder => builder.Default());
-            table.AddRow("ILGPU Accelerators", context.Accelerators.Count().ToString());
+            using var context = Context.CreateDefault();
+            table.AddRow("ILGPU Devices", context.Devices.Count().ToString());
             
-            foreach (var accelerator in context.Accelerators)
+            foreach (var device in context.Devices)
             {
-                table.AddRow($"  {accelerator.AcceleratorType}", accelerator.Name);
-                table.AddRow($"  Memory Size", $"{accelerator.MemorySize / (1024 * 1024):N0} MB");
-                table.AddRow($"  Max Grid Size", accelerator.MaxGridSize.ToString());
-                table.AddRow($"  Max Group Size", accelerator.MaxGroupSize.ToString());
+                table.AddRow($"  {device.AcceleratorType}", device.Name);
+                table.AddRow($"  Memory Size", $"{device.MemorySize / (1024 * 1024):N0} MB");
+                table.AddRow($"  Max Grid Size", device.MaxGridSize.ToString());
+                table.AddRow($"  Max Group Size", device.MaxGroupSize.ToString());
             }
         }
         catch (Exception ex)

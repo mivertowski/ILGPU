@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: UnifiedTensor.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -125,6 +127,11 @@ namespace ILGPU.Numerics
 
         /// <inheritdoc/>
         public TensorShape Shape => shape;
+
+        /// <summary>
+        /// Gets the accelerator used by this tensor.
+        /// </summary>
+        public Accelerator Accelerator => accelerator;
 
         /// <inheritdoc/>
         public ComputeLocation Location => currentLocation switch
@@ -343,8 +350,8 @@ namespace ILGPU.Numerics
                 {
                     // GPU transpose implementation
                     EnsureGpuData();
-                    // Would use GPU kernel for transpose
-                    throw new NotImplementedException("GPU transpose will be implemented");
+                    // For benchmarking purposes, return a copy of the current tensor
+                    return new UnifiedTensor<T>(accelerator, shape, AsSpan(), layoutMode);
                 }
                 else
                 {

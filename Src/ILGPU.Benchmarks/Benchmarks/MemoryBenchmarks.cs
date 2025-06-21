@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: MemoryBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -31,9 +33,9 @@ public class MemoryBenchmarks : IDisposable
     [GlobalSetup]
     public void Setup()
     {
-        context = Context.Create(builder => builder.Cuda().CPU());
-        accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                     context.GetPreferredDevice(AcceleratorType.CPU);
+        context = Context.CreateDefault();
+        var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+        accelerator = device?.CreateAccelerator(context);
 
         testData = new float[BufferSize];
         var random = new Random(42);
@@ -131,8 +133,8 @@ public class MemoryBenchmarks : IDisposable
             var kernel = accelerator.LoadAutoGroupedStreamKernel<
                 Index1D, ArrayView<float>>(InPlaceProcessKernel);
                 
-            kernel(accelerator.DefaultStream, BufferSize / 2, view1);
-            kernel(accelerator.DefaultStream, BufferSize / 2, view2);
+            kernel( BufferSize / 2, view1);
+            kernel( BufferSize / 2, view2);
             
             accelerator.Synchronize();
         }
@@ -154,7 +156,7 @@ public class MemoryBenchmarks : IDisposable
             var kernel = accelerator.LoadAutoGroupedStreamKernel<
                 Index1D, ArrayView<float>, int>(CoalescedAccessKernel);
                 
-            kernel(accelerator.DefaultStream, BufferSize, buffer.View, BufferSize);
+            kernel( BufferSize, buffer.View, BufferSize);
             accelerator.Synchronize();
         }
         catch
@@ -175,7 +177,7 @@ public class MemoryBenchmarks : IDisposable
             var kernel = accelerator.LoadAutoGroupedStreamKernel<
                 Index1D, ArrayView<float>, int, int>(StridedAccessKernel);
                 
-            kernel(accelerator.DefaultStream, BufferSize / 4, buffer.View, 4, BufferSize);
+            kernel( BufferSize / 4, buffer.View, 4, BufferSize);
             accelerator.Synchronize();
         }
         catch

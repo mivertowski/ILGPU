@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>ILGPU.Benchmarks.Benchmarks.MixedPrecisionBenchmarks-20250621-222855</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Ubuntu 22.04.5 LTS (Jammy Jellyfish) WSL
+Intel Core Ultra 7 165H, 1 CPU, 22 logical and 11 physical cores
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  Dry        : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method        </th><th>Job </th><th>InvocationCount</th><th>IterationCount</th><th>LaunchCount</th><th>RunStrategy</th><th>UnrollFactor</th><th>WarmupCount</th><th>MatrixSize</th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Median</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>QuantizedOperations</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>128</td><td>227.3 &mu;s</td><td>6.30 &mu;s</td><td>18.28 &mu;s</td><td>222.8 &mu;s</td><td>6.3477</td><td>-</td><td>-</td><td>80.34 KB</td>
+</tr><tr><td>BF16Operations</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>128</td><td>254.6 &mu;s</td><td>9.88 &mu;s</td><td>28.67 &mu;s</td><td>245.6 &mu;s</td><td>7.8125</td><td>0.4883</td><td>-</td><td>96.34 KB</td>
+</tr><tr><td>FP16ToFP32Conversion</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>256</td><td>1,177.1 &mu;s</td><td>97.78 &mu;s</td><td>288.32 &mu;s</td><td>1,163.2 &mu;s</td><td>-</td><td>-</td><td>-</td><td>3.72 KB</td>
+</tr><tr><td>QuantizedOperations</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>256</td><td>1,331.0 &mu;s</td><td>37.23 &mu;s</td><td>106.22 &mu;s</td><td>1,314.1 &mu;s</td><td>82.0313</td><td>82.0313</td><td>82.0313</td><td>320.42 KB</td>
+</tr><tr><td>FP16ToFP32Conversion</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>512</td><td>1,500.0 &mu;s</td><td>69.53 &mu;s</td><td>205.00 &mu;s</td><td>1,502.5 &mu;s</td><td>-</td><td>-</td><td>-</td><td>3.72 KB</td>
+</tr><tr><td>BF16Operations</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>256</td><td>1,513.5 &mu;s</td><td>97.61 &mu;s</td><td>287.81 &mu;s</td><td>1,580.3 &mu;s</td><td>123.0469</td><td>123.0469</td><td>123.0469</td><td>384.47 KB</td>
+</tr><tr><td>FP16ToFP32Conversion</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>128</td><td>1,576.7 &mu;s</td><td>121.01 &mu;s</td><td>354.89 &mu;s</td><td>1,502.7 &mu;s</td><td>-</td><td>-</td><td>-</td><td>3.73 KB</td>
+</tr><tr><td>MixedPrecisionGEMM</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>128</td><td>1,590.2 &mu;s</td><td>105.89 &mu;s</td><td>298.67 &mu;s</td><td>1,546.3 &mu;s</td><td>-</td><td>-</td><td>-</td><td>5.05 KB</td>
+</tr><tr><td>MixedPrecisionGEMM</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>256</td><td>1,708.9 &mu;s</td><td>81.06 &mu;s</td><td>239.00 &mu;s</td><td>1,678.1 &mu;s</td><td>-</td><td>-</td><td>-</td><td>5.06 KB</td>
+</tr><tr><td>QuantizedOperations</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>128</td><td>2,346.8 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>2,346.8 &mu;s</td><td>-</td><td>-</td><td>-</td><td>81.39 KB</td>
+</tr><tr><td>QuantizedOperations</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>256</td><td>2,511.1 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>2,511.1 &mu;s</td><td>-</td><td>-</td><td>-</td><td>321.39 KB</td>
+</tr><tr><td>BF16Operations</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>128</td><td>2,579.3 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>2,579.3 &mu;s</td><td>-</td><td>-</td><td>-</td><td>97.39 KB</td>
+</tr><tr><td>QuantizedOperations</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>512</td><td>4,134.7 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>4,134.7 &mu;s</td><td>-</td><td>-</td><td>-</td><td>1281.39 KB</td>
+</tr><tr><td>BF16Operations</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>256</td><td>5,259.4 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>5,259.4 &mu;s</td><td>-</td><td>-</td><td>-</td><td>385.39 KB</td>
+</tr><tr><td>QuantizedOperations</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>512</td><td>5,298.6 &mu;s</td><td>173.83 &mu;s</td><td>493.12 &mu;s</td><td>5,222.6 &mu;s</td><td>328.1250</td><td>328.1250</td><td>328.1250</td><td>1280.67 KB</td>
+</tr><tr><td>BF16Operations</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>512</td><td>6,598.6 &mu;s</td><td>220.66 &mu;s</td><td>643.68 &mu;s</td><td>6,608.3 &mu;s</td><td>492.1875</td><td>492.1875</td><td>492.1875</td><td>1536.84 KB</td>
+</tr><tr><td>MixedPrecisionGEMM</td><td>DefaultJob</td><td>Default</td><td>Default</td><td>Default</td><td>Default</td><td>16</td><td>Default</td><td>512</td><td>7,199.9 &mu;s</td><td>139.13 &mu;s</td><td>170.87 &mu;s</td><td>7,178.8 &mu;s</td><td>-</td><td>-</td><td>-</td><td>5.07 KB</td>
+</tr><tr><td>BF16Operations</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>512</td><td>7,219.1 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>7,219.1 &mu;s</td><td>-</td><td>-</td><td>-</td><td>1537.39 KB</td>
+</tr><tr><td>FP16ToFP32Conversion</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>512</td><td>302,575.3 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>302,575.3 &mu;s</td><td>-</td><td>-</td><td>-</td><td>6.59 KB</td>
+</tr><tr><td>FP16ToFP32Conversion</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>128</td><td>359,436.5 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>359,436.5 &mu;s</td><td>-</td><td>-</td><td>-</td><td>5.65 KB</td>
+</tr><tr><td>MixedPrecisionGEMM</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>512</td><td>382,959.2 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>382,959.2 &mu;s</td><td>-</td><td>-</td><td>-</td><td>7.16 KB</td>
+</tr><tr><td>FP16ToFP32Conversion</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>256</td><td>396,166.6 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>396,166.6 &mu;s</td><td>-</td><td>-</td><td>-</td><td>6.59 KB</td>
+</tr><tr><td>MixedPrecisionGEMM</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>128</td><td>420,493.0 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>420,493.0 &mu;s</td><td>-</td><td>-</td><td>-</td><td>8.43 KB</td>
+</tr><tr><td>MixedPrecisionGEMM</td><td>Dry</td><td>1</td><td>1</td><td>1</td><td>ColdStart</td><td>1</td><td>1</td><td>256</td><td>433,986.4 &mu;s</td><td>NA</td><td>0.00 &mu;s</td><td>433,986.4 &mu;s</td><td>-</td><td>-</td><td>-</td><td>7.16 KB</td>
+</tr></tbody></table>
+</body>
+</html>

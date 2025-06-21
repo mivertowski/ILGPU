@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: SimdVectorBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -291,10 +292,10 @@ public class SimdVectorBenchmarks : IDisposable
             // Test System.Numerics.Vector extensions
             var vec = new Vector<float>(vectorA!, 0);
             var gpuArray = vec.ToGPUArray();
-            var backToVector = gpuArray.AsSpan().ToVector();
+            var backToVector = new Vector<float>(gpuArray.AsSpan());
             
             // Simple operation to prevent optimization away
-            _ = backToVector.Length();
+            _ = Vector<float>.Count;
         }
         catch (Exception)
         {

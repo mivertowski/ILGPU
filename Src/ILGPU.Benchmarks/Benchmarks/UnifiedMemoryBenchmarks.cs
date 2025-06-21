@@ -1,16 +1,18 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: UnifiedMemoryBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
 using BenchmarkDotNet.Attributes;
 using ILGPU.Numerics;
+using ILGPU.Numerics.Hybrid;
 using ILGPU.Runtime;
 
 namespace ILGPU.Benchmarks.Benchmarks;
@@ -35,19 +37,20 @@ public class UnifiedMemoryBenchmarks : IDisposable
     {
         try
         {
-            context = Context.Create(builder => builder.Cuda().CPU());
-            accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                         context.GetPreferredDevice(AcceleratorType.CPU);
+            context = Context.CreateDefault();
+            var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+            accelerator = device?.CreateAccelerator(context);
         }
         catch
         {
-            context = Context.Create(builder => builder.CPU());
-            accelerator = context.CreateCPUAccelerator(0);
+            context = Context.CreateDefault();
+            var device = context.GetPreferredDevice(preferCPU: true);
+            accelerator = device?.CreateAccelerator(context);
         }
 
         var shape = new TensorShape(TensorSize, TensorSize);
         unifiedTensorA = UnifiedTensor.Random<float>(accelerator!, shape);
-        unifiedTensorB = UnifiedTensor.Random<float>(accelerator, shape);
+        unifiedTensorB = UnifiedTensor.Random<float>(accelerator!, shape);
     }
 
     [Benchmark(Baseline = true)]
@@ -79,10 +82,10 @@ public class UnifiedMemoryBenchmarks : IDisposable
                 Index1D, ArrayView<float>, ArrayView<float>, ArrayView<float>>(
                 AddKernel);
 
-            kernel(accelerator.DefaultStream, totalElements,
+            kernel( totalElements,
                 bufferA.View, bufferB.View, result.View);
 
-            accelerator.Synchronize();
+            accelerator!.Synchronize();
 
             // Transfer back
             var resultData = result.GetAsArray1D();
@@ -130,10 +133,10 @@ public class UnifiedMemoryBenchmarks : IDisposable
             var kernel = accelerator!.LoadAutoGroupedStreamKernel<
                 Index1D, ArrayView<float>>(ModifyKernel);
 
-            kernel(accelerator.DefaultStream, Math.Min(100, gpuBuffer.Length),
+            kernel((Index1D)Math.Min(100, gpuBuffer.Length),
                 gpuBuffer.View.SubView(0, Math.Min(100, gpuBuffer.Length)));
 
-            accelerator.Synchronize();
+            accelerator!.Synchronize();
         }
         catch
         {
@@ -163,10 +166,10 @@ public class UnifiedMemoryBenchmarks : IDisposable
                 var kernel = accelerator!.LoadAutoGroupedStreamKernel<
                     Index1D, ArrayView<float>>(ModifyKernel);
 
-                kernel(accelerator.DefaultStream, Math.Min(50, gpuBuffer.Length),
+                kernel((Index1D)Math.Min(50, gpuBuffer.Length),
                     gpuBuffer.View.SubView(0, Math.Min(50, gpuBuffer.Length)));
 
-                accelerator.Synchronize();
+                accelerator!.Synchronize();
             }
         }
         catch
@@ -194,7 +197,7 @@ public class UnifiedMemoryBenchmarks : IDisposable
             using var buffer = accelerator.Allocate1D<float>(totalElements);
             
             buffer.CopyFromCPU(pinnedData);
-            accelerator.Synchronize();
+            accelerator!.Synchronize();
             
             var result = buffer.GetAsArray1D();
 
@@ -227,8 +230,12 @@ public class UnifiedMemoryBenchmarks : IDisposable
             var firstHalf = buffer.View.SubView(0, halfSize);
             var secondHalf = buffer.View.SubView(halfSize, halfSize);
 
-            kernel(stream1, halfSize, firstHalf);
-            kernel(stream2, halfSize, secondHalf);
+            kernel(halfSize, firstHalf);
+            kernel(halfSize, secondHalf);
+            
+            // Execute on streams
+            stream1.Synchronize();
+            stream2.Synchronize();
 
             // Synchronize both streams
             Task.WaitAll(
@@ -254,8 +261,8 @@ public class UnifiedMemoryBenchmarks : IDisposable
             var kernel = accelerator!.LoadAutoGroupedStreamKernel<
                 Index1D, ArrayView<float>>(ModifyKernel);
 
-            kernel(accelerator.DefaultStream, gpuBuffer.Length, gpuBuffer.View);
-            accelerator.Synchronize();
+            kernel((Index1D)gpuBuffer.Length, gpuBuffer.View);
+            accelerator!.Synchronize();
 
             // Force migration GPU -> CPU
             for (int i = 0; i < cpuSpan.Length; i++)
@@ -264,8 +271,8 @@ public class UnifiedMemoryBenchmarks : IDisposable
             }
 
             // Force migration CPU -> GPU again
-            kernel(accelerator.DefaultStream, gpuBuffer.Length, gpuBuffer.View);
-            accelerator.Synchronize();
+            kernel((Index1D)gpuBuffer.Length, gpuBuffer.View);
+            accelerator!.Synchronize();
         }
         catch
         {

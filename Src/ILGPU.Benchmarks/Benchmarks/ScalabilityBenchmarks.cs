@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: ScalabilityBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -36,9 +38,9 @@ public class ScalabilityBenchmarks : IDisposable
     [GlobalSetup]
     public void Setup()
     {
-        context = Context.Create(builder => builder.Cuda().CPU());
-        accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                     context.GetPreferredDevice(AcceleratorType.CPU);
+        context = Context.CreateDefault();
+        var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+        accelerator = device?.CreateAccelerator(context);
 
         // Pre-generate test data for all problem sizes
         var sizes = new[] { 1024, 4096, 16384, 65536, 262144, 1048576 };
@@ -174,7 +176,7 @@ public class ScalabilityBenchmarks : IDisposable
                 Index1D, ArrayView<float>, ArrayView<float>, ArrayView<float>>(
                 VectorAddKernel);
 
-            kernel(accelerator.DefaultStream, ProblemSize,
+            kernel( ProblemSize,
                 bufferA.View, bufferB.View, result.View);
                 
             accelerator.Synchronize();

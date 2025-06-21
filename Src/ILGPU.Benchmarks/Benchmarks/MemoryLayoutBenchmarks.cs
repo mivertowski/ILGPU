@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: MemoryLayoutBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -31,9 +33,9 @@ public class MemoryLayoutBenchmarks : IDisposable
     [GlobalSetup]
     public void Setup()
     {
-        context = Context.Create(builder => builder.Cuda().CPU());
-        accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                     context.GetPreferredDevice(AcceleratorType.CPU);
+        context = Context.CreateDefault();
+        var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+        accelerator = device?.CreateAccelerator(context);
 
         var totalElements = MatrixSize * MatrixSize;
         testData = new float[totalElements];
@@ -52,13 +54,13 @@ public class MemoryLayoutBenchmarks : IDisposable
             using var buffer = accelerator!.Allocate2DDenseX<float>(
                 new Index2D(MatrixSize, MatrixSize));
             
-            buffer.CopyFromCPU(testData!);
+            buffer.View.AsContiguous().CopyFromCPU(testData!);
             
             var kernel = accelerator.LoadAutoGroupedStreamKernel<
                 Index2D, ArrayView2D<float, Stride2D.DenseX>, int>(
                 RowMajorAccessKernel);
                 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
+            kernel( new Index2D(MatrixSize, MatrixSize),
                 buffer.View, MatrixSize);
             accelerator.Synchronize();
         }
@@ -77,13 +79,13 @@ public class MemoryLayoutBenchmarks : IDisposable
             using var buffer = accelerator!.Allocate2DDenseY<float>(
                 new Index2D(MatrixSize, MatrixSize));
             
-            buffer.CopyFromCPU(testData!);
+            buffer.View.AsContiguous().CopyFromCPU(testData!);
             
             var kernel = accelerator.LoadAutoGroupedStreamKernel<
                 Index2D, ArrayView2D<float, Stride2D.DenseY>, int>(
                 ColumnMajorAccessKernel);
                 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
+            kernel( new Index2D(MatrixSize, MatrixSize),
                 buffer.View, MatrixSize);
             accelerator.Synchronize();
         }
@@ -105,7 +107,7 @@ public class MemoryLayoutBenchmarks : IDisposable
                 Index2D, ArrayView<float>, int, int>(
                 TiledAccessKernel);
                 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
+            kernel( new Index2D(MatrixSize, MatrixSize),
                 buffer.View, MatrixSize, 16); // 16x16 tiles
             accelerator.Synchronize();
         }
@@ -129,7 +131,7 @@ public class MemoryLayoutBenchmarks : IDisposable
                 Index2D, ArrayView<float>, int, int>(
                 BlockedAccessKernel);
                 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
+            kernel( new Index2D(MatrixSize, MatrixSize),
                 buffer.View, MatrixSize, blockSize);
             accelerator.Synchronize();
         }
@@ -171,7 +173,7 @@ public class MemoryLayoutBenchmarks : IDisposable
                 Index1D, ArrayView<float>, ArrayView<float>, ArrayView<float>, int>(
                 StructOfArraysKernel);
                 
-            kernel(accelerator.DefaultStream, totalElements,
+            kernel( totalElements,
                 xBuffer.View, yBuffer.View, zBuffer.View, totalElements);
             accelerator.Synchronize();
         }
@@ -207,7 +209,7 @@ public class MemoryLayoutBenchmarks : IDisposable
                 Index1D, ArrayView<float>, int>(
                 ArrayOfStructsKernel);
                 
-            kernel(accelerator.DefaultStream, totalElements, buffer.View, totalElements);
+            kernel( totalElements, buffer.View, totalElements);
             accelerator.Synchronize();
         }
         catch
@@ -243,7 +245,7 @@ public class MemoryLayoutBenchmarks : IDisposable
                 Index2D, ArrayView<float>, int, int>(
                 PaddedAccessKernel);
                 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
+            kernel( new Index2D(MatrixSize, MatrixSize),
                 buffer.View, MatrixSize, paddedWidth);
             accelerator.Synchronize();
         }
@@ -278,10 +280,10 @@ public class MemoryLayoutBenchmarks : IDisposable
                 SimpleProcessKernel);
             
             // Test compact layout
-            kernel(accelerator.DefaultStream, totalElements, compactBuffer.View, totalElements);
+            kernel( totalElements, compactBuffer.View, totalElements);
             
             // Test aligned layout
-            kernel(accelerator.DefaultStream, totalElements, alignedBuffer.View, totalElements);
+            kernel( totalElements, alignedBuffer.View, totalElements);
             
             accelerator.Synchronize();
         }

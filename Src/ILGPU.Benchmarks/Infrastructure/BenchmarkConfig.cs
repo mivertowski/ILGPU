@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: BenchmarkConfig.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -13,6 +14,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Exporters.Csv;
+using BenchmarkDotNet.Exporters.Json;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Order;
@@ -57,9 +59,9 @@ public class BenchmarkConfig
     {
         return ManualConfig.Create(DefaultConfig.Instance)
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-            .AddJob(Job.ShortRun
+            .AddJob(Job.Dry
                 .WithWarmupCount(1)
-                .WithIterationCount(3)
+                .WithIterationCount(1)
                 .WithInvocationCount(1)
                 .WithUnrollFactor(1))
             .AddExporter(HtmlExporter.Default)
@@ -77,7 +79,7 @@ public class BenchmarkConfig
             .AddJob(Job.Default
                 .WithWarmupCount(3)
                 .WithIterationCount(5)
-                .WithInvocationCount(1)
+                .WithInvocationCount(16)
                 .WithUnrollFactor(16))
             .AddExporter(HtmlExporter.Default)
             .AddExporter(CsvExporter.Default)
@@ -96,7 +98,7 @@ public class BenchmarkConfig
             .AddJob(Job.LongRun
                 .WithWarmupCount(5)
                 .WithIterationCount(10)
-                .WithInvocationCount(1)
+                .WithInvocationCount(16)
                 .WithUnrollFactor(16))
             .AddExporter(HtmlExporter.Default)
             .AddExporter(CsvExporter.Default)
@@ -105,8 +107,9 @@ public class BenchmarkConfig
             .AddLogger(ConsoleLogger.Default)
             .AddDiagnoser(MemoryDiagnoser.Default)
             .AddDiagnoser(ThreadingDiagnoser.Default)
-            .AddDiagnoser(HardwareCounters.BranchMispredictions)
-            .AddDiagnoser(HardwareCounters.CacheMisses)
+            // Hardware counters may not be available on all systems
+            // .AddDiagnoser(HardwareCounters.BranchMispredictions)
+            // .AddDiagnoser(HardwareCounters.CacheMisses)
             .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
             .WithSummaryStyle(BenchmarkDotNet.Reports.SummaryStyle.Default.WithRatioStyle(BenchmarkDotNet.Columns.RatioStyle.Trend));
     }
@@ -121,7 +124,7 @@ public class BenchmarkConfig
                 .WithIterationCount(1)
                 .WithInvocationCount(1000000) // High iteration count for burn-in
                 .WithUnrollFactor(1))
-            .AddExporter(ConsoleExporter.Default)
+            .AddExporter(HtmlExporter.Default)
             .AddLogger(ConsoleLogger.Default)
             .AddDiagnoser(MemoryDiagnoser.Default)
             .AddDiagnoser(ThreadingDiagnoser.Default)

@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: HybridProcessingBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -36,24 +38,26 @@ public class HybridProcessingBenchmarks : IDisposable
     {
         try
         {
-            context = Context.Create(builder => builder.Cuda().CPU());
+            context = Context.CreateDefault();
             hybridProcessor = HybridTensorProcessorFactory.Create(context);
             
-            var accelerator = context.GetPreferredDevice(AcceleratorType.CPU);
+            var device = context.GetPreferredDevice(preferCPU: true);
+            var accelerator = device?.CreateAccelerator(context);
             var shape = new TensorShape(TensorSize, TensorSize);
             
-            tensorA = UnifiedTensor.Random<float>(accelerator, shape);
-            tensorB = UnifiedTensor.Random<float>(accelerator, shape);
+            tensorA = UnifiedTensor.Random<float>(accelerator!, shape);
+            tensorB = UnifiedTensor.Random<float>(accelerator!, shape);
         }
         catch
         {
             // Fallback for testing environments
-            context = Context.Create(builder => builder.CPU());
-            var accelerator = context.CreateCPUAccelerator(0);
+            context = Context.CreateDefault();
+            var cpuDevice = context.GetPreferredDevice(preferCPU: true);
+            var accelerator = cpuDevice?.CreateAccelerator(context);
             var shape = new TensorShape(TensorSize, TensorSize);
             
-            tensorA = UnifiedTensor.Random<float>(accelerator, shape);
-            tensorB = UnifiedTensor.Random<float>(accelerator, shape);
+            tensorA = UnifiedTensor.Random<float>(accelerator!, shape);
+            tensorB = UnifiedTensor.Random<float>(accelerator!, shape);
         }
     }
 
@@ -66,8 +70,8 @@ public class HybridProcessingBenchmarks : IDisposable
         {
             using var result = await hybridProcessor.ProcessAsync(
                 tensorA!,
-                TensorOperation.Add,
-                HybridStrategy.CpuOnly);
+                new MockTensorOperation(TensorOperationType.ElementWiseAdd),
+                HybridStrategy.CpuSimd);
         }
         catch
         {
@@ -89,8 +93,8 @@ public class HybridProcessingBenchmarks : IDisposable
         {
             using var result = await hybridProcessor.ProcessAsync(
                 tensorA!,
-                TensorOperation.Add,
-                HybridStrategy.GpuOnly);
+                new MockTensorOperation(TensorOperationType.ElementWiseAdd),
+                HybridStrategy.GpuGeneral);
         }
         catch
         {
@@ -111,7 +115,7 @@ public class HybridProcessingBenchmarks : IDisposable
         {
             using var result = await hybridProcessor.ProcessAsync(
                 tensorA!,
-                TensorOperation.Add,
+                new MockTensorOperation(TensorOperationType.ElementWiseAdd),
                 HybridStrategy.Auto);
         }
         catch
@@ -133,8 +137,8 @@ public class HybridProcessingBenchmarks : IDisposable
         {
             using var result = await hybridProcessor.ProcessAsync(
                 tensorA!,
-                TensorOperation.MatrixMultiply,
-                HybridStrategy.WorkloadSplitting);
+                new MockTensorOperation(TensorOperationType.MatrixMultiply),
+                HybridStrategy.Hybrid);
         }
         catch
         {
@@ -155,8 +159,8 @@ public class HybridProcessingBenchmarks : IDisposable
         {
             using var result = await hybridProcessor.ProcessAsync(
                 tensorA!,
-                TensorOperation.MatrixMultiply,
-                HybridStrategy.AdaptiveThreshold);
+                new MockTensorOperation(TensorOperationType.MatrixMultiply),
+                HybridStrategy.Auto);
         }
         catch
         {
@@ -185,7 +189,7 @@ public class HybridProcessingBenchmarks : IDisposable
         catch
         {
             // Fallback operation
-            _ = tensorA!.Shape.TotalSize;
+            _ = tensorA!.Shape.Size;
         }
     }
 
@@ -203,17 +207,17 @@ public class HybridProcessingBenchmarks : IDisposable
             // Simulate a processing pipeline: Add -> Multiply -> Add
             using var step1 = await hybridProcessor.ProcessAsync(
                 tensorA!,
-                TensorOperation.Add,
+                new MockTensorOperation(TensorOperationType.ElementWiseAdd),
                 HybridStrategy.Auto);
                 
             using var step2 = await hybridProcessor.ProcessAsync(
                 step1,
-                TensorOperation.MatrixMultiply,
+                new MockTensorOperation(TensorOperationType.MatrixMultiply),
                 HybridStrategy.Auto);
                 
             using var final = await hybridProcessor.ProcessAsync(
                 step2,
-                TensorOperation.Add,
+                new MockTensorOperation(TensorOperationType.ElementWiseAdd),
                 HybridStrategy.Auto);
         }
         catch
@@ -240,7 +244,7 @@ public class HybridProcessingBenchmarks : IDisposable
             {
                 tasks.Add(hybridProcessor.ProcessAsync(
                     tensorA!,
-                    TensorOperation.Add,
+                    new MockTensorOperation(TensorOperationType.ElementWiseAdd),
                     HybridStrategy.Auto));
             }
             
@@ -269,8 +273,8 @@ public class HybridProcessingBenchmarks : IDisposable
                 var cpuData = tensorA!.AsSpan().ToArray();
                 using var tempTensor = UnifiedTensor.FromArray<float>(
                     tensorA.Accelerator, 
-                    cpuData, 
-                    tensorA.Shape);
+                    tensorA.Shape,
+                    cpuData);
                 
                 _ = tempTensor.AsGpuBuffer();
             }
@@ -278,7 +282,7 @@ public class HybridProcessingBenchmarks : IDisposable
         catch
         {
             // Fallback operation
-            _ = tensorA!.Shape.TotalSize;
+            _ = tensorA!.Shape.Size;
         }
     }
 
@@ -296,9 +300,9 @@ public class HybridProcessingBenchmarks : IDisposable
             // Run multiple operations concurrently
             var tasks = new[]
             {
-                hybridProcessor.ProcessAsync(tensorA!, TensorOperation.Add, HybridStrategy.CpuOnly),
-                hybridProcessor.ProcessAsync(tensorB!, TensorOperation.Add, HybridStrategy.GpuOnly),
-                hybridProcessor.ProcessAsync(tensorA!, TensorOperation.MatrixMultiply, HybridStrategy.Auto)
+                hybridProcessor.ProcessAsync(tensorA!, new MockTensorOperation(TensorOperationType.ElementWiseAdd), HybridStrategy.CpuSimd),
+                hybridProcessor.ProcessAsync(tensorB!, new MockTensorOperation(TensorOperationType.ElementWiseAdd), HybridStrategy.GpuGeneral),
+                hybridProcessor.ProcessAsync(tensorA!, new MockTensorOperation(TensorOperationType.MatrixMultiply), HybridStrategy.Auto)
             };
             
             var results = await Task.WhenAll(tasks);
@@ -327,4 +331,23 @@ public class HybridProcessingBenchmarks : IDisposable
         hybridProcessor?.Dispose();
         context?.Dispose();
     }
+}
+
+/// <summary>
+/// Mock tensor operation for benchmarking purposes.
+/// </summary>
+public class MockTensorOperation : TensorOperation
+{
+    private readonly TensorOperationType operationType;
+
+    public MockTensorOperation(TensorOperationType type)
+    {
+        operationType = type;
+    }
+
+    public override TensorOperationType Type => operationType;
+
+    public override long EstimatedOps => 1000; // Simple estimate for benchmarking
+
+    public override bool PrefersTensorCores => operationType == TensorOperationType.MatrixMultiply;
 }

@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
 //
 // File: TensorCoreBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -38,9 +39,9 @@ public class TensorCoreBenchmarks : IDisposable
     {
         try
         {
-            context = Context.Create(builder => builder.Cuda().CPU());
-            accelerator = context.GetPreferredDevice(AcceleratorType.Cuda) ??
-                         context.GetPreferredDevice(AcceleratorType.CPU);
+            context = Context.CreateDefault();
+            var device = context.GetPreferredDevice(preferCPU: false); // GPU preferred, CPU fallback
+            accelerator = device?.CreateAccelerator(context);
 
             if (accelerator == null)
                 throw new NotSupportedException("No suitable accelerator found");
@@ -65,8 +66,12 @@ public class TensorCoreBenchmarks : IDisposable
 
     private void SetupFallback()
     {
-        context = Context.Create(builder => builder.CPU());
-        accelerator = context.CreateCPUAccelerator(0);
+        context = Context.CreateDefault();
+        var device = context.GetPreferredDevice(preferCPU: true);
+        accelerator = device?.CreateAccelerator(context);
+        
+        if (accelerator == null)
+            throw new NotSupportedException("No suitable accelerator found for fallback");
         
         var totalElements = MatrixSize * MatrixSize;
         matrixA = accelerator.Allocate1D<Half>(totalElements);
@@ -96,9 +101,9 @@ public class TensorCoreBenchmarks : IDisposable
         }
 
         // Upload to GPU
-        matrixA!.CopyFromCPU(cpuA);
-        matrixB!.CopyFromCPU(cpuB);
-        matrixC!.CopyFromCPU(cpuC);
+        matrixA?.CopyFromCPU(cpuA);
+        matrixB?.CopyFromCPU(cpuB);
+        matrixC?.CopyFromCPU(cpuC);
     }
 
     [Benchmark(Baseline = true)]
@@ -109,10 +114,13 @@ public class TensorCoreBenchmarks : IDisposable
             Index2D, ArrayView<Half>, ArrayView<Half>, ArrayView<float>, ArrayView<float>, int>(
             StandardMatMulKernel);
 
-        kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
-            matrixA!.View, matrixB!.View, matrixC!.View, result!.View, MatrixSize);
+        if (matrixA == null || matrixB == null || matrixC == null || result == null)
+            return;
+            
+        kernel(new Index2D(MatrixSize, MatrixSize),
+            matrixA.View, matrixB.View, matrixC.View, result.View, MatrixSize);
         
-        accelerator.Synchronize();
+        accelerator!.Synchronize();
     }
 
     [Benchmark]
@@ -130,11 +138,14 @@ public class TensorCoreBenchmarks : IDisposable
             // Use tensor core operations for supported configurations
             var config = TensorOperations.TensorConfig.Default;
             
+            if (matrixA == null || matrixB == null || matrixC == null || result == null)
+                return;
+                
             // Convert to 2D views for tensor operations
-            var a2D = matrixA!.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
-            var b2D = matrixB!.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
-            var c2D = matrixC!.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
-            var result2D = result!.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
+            var a2D = matrixA.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
+            var b2D = matrixB.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
+            var c2D = matrixC.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
+            var result2D = result.View.As2DDenseXView(new Index2D(MatrixSize, MatrixSize));
 
             // Tensor GEMM: result = 1.0 * A * B + 1.0 * C
             TensorOperations.TensorGemm(
@@ -145,7 +156,7 @@ public class TensorCoreBenchmarks : IDisposable
                 1.0f, result2D, MatrixSize,
                 config);
                 
-            accelerator.Synchronize();
+            accelerator!.Synchronize();
         }
         catch (NotSupportedException)
         {
@@ -170,10 +181,13 @@ public class TensorCoreBenchmarks : IDisposable
                 Index2D, ArrayView<Half>, ArrayView<Half>, ArrayView<float>, ArrayView<float>, int>(
                 MixedPrecisionKernel);
 
-            kernel(accelerator.DefaultStream, new Index2D(MatrixSize, MatrixSize),
-                matrixA!.View, matrixB!.View, matrixC!.View, result!.View, MatrixSize);
+            if (matrixA == null || matrixB == null || matrixC == null || result == null)
+                return;
+                
+            kernel(new Index2D(MatrixSize, MatrixSize),
+                matrixA.View, matrixB.View, matrixC.View, result.View, MatrixSize);
             
-            accelerator.Synchronize();
+            accelerator!.Synchronize();
         }
         catch (Exception)
         {

@@ -1,11 +1,13 @@
 // ---------------------------------------------------------------------------------------
-//                                        ILGPU
-//                        Copyright (c) 2024-2025 ILGPU Project
-//                                    www.ilgpu.net
+//                                     ILGPU-AOT
+//                        Copyright (c) 2024-2025 ILGPU-AOT Project
+
+// Developed by:           Michael Ivertowski
+//
 //
 // File: MatrixVectorBenchmarks.cs
 //
-// This file is part of ILGPU and is distributed under the University of Illinois Open
+// This file is part of ILGPU-AOT and is distributed under the University of Illinois Open
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
@@ -241,9 +243,9 @@ public class MatrixVectorBenchmarks
         var vectorSize = Vector<float>.Count;
         
         var random = new Random(456);
-        for (int i = 0; i < matrix2.Length; i++)
+        for (int j = 0; j < matrix2.Length; j++)
         {
-            matrix2[i] = random.NextSingle();
+            matrix2[j] = random.NextSingle();
         }
 
         int totalElements = MatrixSize * MatrixSize;
@@ -286,7 +288,7 @@ public class MatrixVectorBenchmarks
                     {
                         sum += matrix![i * MatrixSize + j] * vector![j];
                     }
-                    result[i] += sum;
+                    result![i] += sum;
                 }
             }
         }
